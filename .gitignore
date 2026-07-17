@@ -1,0 +1,21 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+.angular/
+coverage/
+out-tsc/
+*.tsbuildinfo
+
+# generated code (regenerable, except the committed contract artifacts)
+apps/api/src/generated/
+
+# environment
+.env
+.env.*
+!.env.example
+
+# editor/os noise
+.DS_Store
+.playwright-mcp/

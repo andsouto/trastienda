@@ -1,0 +1,17 @@
+packages:
+  - apps/*
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@prisma/engines': true
+  cpu-features: false
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
+  prisma: true
+  protobufjs: false
+  ssh2: false
+
+peerDependencyRules:
+  allowedVersions:
+    'openapi-typescript>typescript': '6'

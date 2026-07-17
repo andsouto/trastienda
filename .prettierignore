@@ -1,0 +1,19 @@
+# ESLint/@stylistic owns TS/JS
+**/*.ts
+**/*.mts
+**/*.cts
+**/*.js
+**/*.mjs
+**/*.cjs
+
+# hand-written prose stays as written
+**/*.md
+
+# generated / lockfiles
+pnpm-lock.yaml
+apps/api/openapi.json
+
+# build output
+dist/
+.angular/
+coverage/

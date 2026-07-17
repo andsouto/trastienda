@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # prisma.config.ts resolves it eagerly; no database is contacted by generate
+  DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @trastienda/api run prisma:generate
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Contract codegen is up to date
+        run: |
+          pnpm codegen
+          git diff --exit-code -- apps/api/openapi.json apps/admin/src/app/core/api/schema.d.ts
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build

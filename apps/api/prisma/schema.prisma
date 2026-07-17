@@ -1,0 +1,11 @@
+// Domain model pending: aggregates for catalog/inventory/sales arrive with the
+// domain design session. Until then the schema only wires up the toolchain.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}

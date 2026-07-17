@@ -1,0 +1,166 @@
+name: trastienda
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-trastienda}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trastienda}
+      POSTGRES_DB: ${POSTGRES_DB:-trastienda}
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      - ./dev/postgres-init.sql:/docker-entrypoint-initdb.d/postgres-init.sql:ro
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ':9001'
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-trastienda}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-trastienda-secret}
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    volumes:
+      - minio-data:/data
+
+  minio-init:
+    image: minio/mc:latest
+    restart: 'no'
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint:
+      - /bin/sh
+      - -c
+      - >
+        mc alias set local http://minio:9000
+        ${S3_ACCESS_KEY:-trastienda} ${S3_SECRET_KEY:-trastienda-secret} &&
+        mc mb --ignore-existing local/${S3_BUCKET:-trastienda-media}
+
+  # --- Zitadel (reference IdP, ADR-0008) -------------------------------------
+  # Adapted from the official quickstart (zitadel/deploy/compose): the login UI
+  # is a separate app since v4, so a proxy unifies api + login under one origin,
+  # http://localhost:8080. First admin login: zitadel-admin@zitadel.localhost /
+  # Password1!
+  zitadel-proxy:
+    image: traefik:v3.6.8
+    restart: unless-stopped
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --ping=true
+      - --ping.entrypoint=web
+    ports:
+      - '8080:80'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      zitadel-api:
+        condition: service_healthy
+      zitadel-login:
+        condition: service_healthy
+
+  zitadel-api:
+    image: ghcr.io/zitadel/zitadel:v4.13.0
+    restart: unless-stopped
+    user: '0'
+    command: start-from-init --masterkey "${ZITADEL_MASTERKEY:-MasterkeyNeedsToHave32Characters}"
+    environment:
+      ZITADEL_PORT: 8080
+      ZITADEL_EXTERNALDOMAIN: localhost
+      ZITADEL_EXTERNALPORT: 8080
+      ZITADEL_EXTERNALSECURE: false
+      ZITADEL_TLS_ENABLED: false
+
+      ZITADEL_DATABASE_POSTGRES_DSN: postgresql://${POSTGRES_USER:-trastienda}:${POSTGRES_PASSWORD:-trastienda}@postgres:5432/zitadel?sslmode=disable
+
+      ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORDCHANGEREQUIRED: false
+      ZITADEL_FIRSTINSTANCE_LOGINCLIENTPATPATH: /zitadel/bootstrap/login-client.pat
+      ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_USERNAME: login-client
+      ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_NAME: Automatically Initialized IAM_LOGIN_CLIENT
+      ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_PAT_EXPIRATIONDATE: '2099-01-01T00:00:00Z'
+
+      ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_REQUIRED: true
+      ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_BASEURI: http://localhost:8080/ui/v2/login/
+      ZITADEL_OIDC_DEFAULTLOGINURLV2: http://localhost:8080/ui/v2/login/login?authRequest=
+      ZITADEL_OIDC_DEFAULTLOGOUTURLV2: http://localhost:8080/ui/v2/login/logout?post_logout_redirect=
+      ZITADEL_SAML_DEFAULTLOGINURLV2: http://localhost:8080/ui/v2/login/login?samlRequest=
+    healthcheck:
+      test: ['CMD', '/app/zitadel', 'ready']
+      interval: 10s
+      timeout: 30s
+      retries: 12
+      start_period: 20s
+    volumes:
+      - zitadel-bootstrap:/zitadel/bootstrap:rw
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.zitadel-api.loadbalancer.server.port=8080
+      - traefik.http.services.zitadel-api.loadbalancer.server.scheme=h2c
+      - traefik.http.routers.zitadel-api.rule=Host(`localhost`) && !PathPrefix(`/ui/v2/login`) && !Path(`/`)
+      - traefik.http.routers.zitadel-api.entrypoints=web
+      - traefik.http.routers.zitadel-api.service=zitadel-api
+      - traefik.http.routers.zitadel-api.priority=100
+
+  zitadel-login:
+    image: ghcr.io/zitadel/zitadel-login:v4.13.0
+    restart: unless-stopped
+    user: '0'
+    environment:
+      ZITADEL_API_URL: http://zitadel-api:8080
+      NEXT_PUBLIC_BASE_PATH: /ui/v2/login
+      ZITADEL_SERVICE_USER_TOKEN_FILE: /zitadel/bootstrap/login-client.pat
+      CUSTOM_REQUEST_HEADERS: Host:localhost,X-Forwarded-Proto:http
+    healthcheck:
+      test:
+        - CMD
+        - /bin/sh
+        - -c
+        - node /app/healthcheck.mjs http://localhost:3000/ui/v2/login/healthy
+      interval: 10s
+      timeout: 30s
+      retries: 12
+      start_period: 20s
+    volumes:
+      - zitadel-bootstrap:/zitadel/bootstrap:ro
+    depends_on:
+      zitadel-api:
+        condition: service_healthy
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.zitadel-login.loadbalancer.server.port=3000
+      - traefik.http.middlewares.zitadel-root-rewrite.replacepath.path=/ui/v2/login/
+      - traefik.http.routers.zitadel-root.rule=Host(`localhost`) && Path(`/`)
+      - traefik.http.routers.zitadel-root.entrypoints=web
+      - traefik.http.routers.zitadel-root.middlewares=zitadel-root-rewrite
+      - traefik.http.routers.zitadel-root.service=zitadel-login
+      - traefik.http.routers.zitadel-root.priority=400
+      - traefik.http.routers.zitadel-login.rule=Host(`localhost`) && PathPrefix(`/ui/v2/login`)
+      - traefik.http.routers.zitadel-login.entrypoints=web
+      - traefik.http.routers.zitadel-login.service=zitadel-login
+      - traefik.http.routers.zitadel-login.priority=250
+
+volumes:
+  postgres-data:
+  minio-data:
+  zitadel-bootstrap:
