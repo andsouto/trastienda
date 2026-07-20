@@ -5,10 +5,11 @@ variants (size/color), stock tracked as a movement ledger, sales tickets and pur
 invoices. Backend API + admin web app. A future public online shop will be an external
 consumer of the same API (out of scope for now, separate private repo).
 
-**Status (2026-07-20):** monorepo scaffolded and verified (CI, compose, codegen chain);
+**Status (2026-07-21):** monorepo scaffolded and verified (CI, compose, codegen chain);
 commit messages now linted per-commit in CI (rebase-only merges to `main`, ADR-0009);
-repo visibility flip to public + the branch-protection ruleset that depends on it are
-still pending manual execution. No domain code yet. Foundational decisions are ADRs in
+repo is public with the branch-protection ruleset live (PR required, `verify` +
+`commitlint` checks required and up to date, linear history, no force-push). No domain
+code yet. Foundational decisions are ADRs in
 [docs/decisions/](docs/decisions/) — read them before proposing changes to stack or
 architecture; do not re-litigate settled decisions without new evidence. ADRs are
 living documents: update in place, git is the history.
