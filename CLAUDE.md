@@ -5,8 +5,10 @@ variants (size/color), stock tracked as a movement ledger, sales tickets and pur
 invoices. Backend API + admin web app. A future public online shop will be an external
 consumer of the same API (out of scope for now, separate private repo).
 
-**Status (2026-07-12):** monorepo scaffolded and verified (CI, compose, codegen chain);
-no domain code yet. Foundational decisions are ADRs in
+**Status (2026-07-20):** monorepo scaffolded and verified (CI, compose, codegen chain);
+commit messages now linted per-commit in CI (rebase-only merges to `main`, ADR-0009);
+repo visibility flip to public + the branch-protection ruleset that depends on it are
+still pending manual execution. No domain code yet. Foundational decisions are ADRs in
 [docs/decisions/](docs/decisions/) — read them before proposing changes to stack or
 architecture; do not re-litigate settled decisions without new evidence. ADRs are
 living documents: update in place, git is the history.
@@ -31,8 +33,10 @@ living documents: update in place, git is the history.
 - **Repo**: pnpm-workspaces monorepo — `apps/api`, `apps/admin` (ADR-0001). No task
   orchestrator yet (add Turborepo when CI hurts).
 - **CI/CD**: GitHub Actions (`.github/workflows/ci.yml`), conventional commits,
-  release-please manifest mode with a single product version (ADR-0009). Docker
-  images/Kustomize/Timoni arrive when there is something to package.
+  release-please manifest mode with a single product version (ADR-0009). `main` only
+  takes rebase merges (no merge commits, no squash), gated by a branch-protection
+  ruleset requiring green CI + commit-message lint. Docker images/Kustomize/Timoni
+  arrive when there is something to package.
 - **License**: AGPL-3.0 (ADR-0010). Name "trastienda" is a provisional codename (ADR-0011).
 
 ## Tooling
@@ -70,7 +74,9 @@ living documents: update in place, git is the history.
 
 ## Conventions
 
-- Conventional commits (enforced expectation; release-please depends on them).
+- Conventional commits, enforced in CI per commit (`wagoid/commitlint-github-action`,
+  ADR-0009) — not just the PR title, since `main` only takes rebase merges and every
+  commit lands verbatim; release-please depends on them.
 - TypeScript strict; erasable-syntax-only in `apps/api` (no `enum`, no `namespace`,
   no decorators) so code stays compatible with Node's native type stripping. Relative
   imports use the real `.ts` extension (`rewriteRelativeImportExtensions` handles the

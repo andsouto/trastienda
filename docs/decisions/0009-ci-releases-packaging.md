@@ -11,6 +11,18 @@ repos.
 ## Decision
 
 - **CI**: GitHub Actions (lint, test, build on every PR).
+- **Merging**: `main` only changes through a pull request with CI green; no direct
+  pushes/commits to `main`, enforced by a branch protection ruleset (require PR,
+  required status checks up to date, linear history, no force-push). Rebase merge only
+  (merge commit and squash disabled at the repo level): commits land on `main` exactly
+  as authored, so there is no editable merge-time textbox for the commit-message check
+  below to miss. A branch/PR may still carry more than one related change — it just
+  means every commit on it has to be a well-formed conventional commit, not that a PR
+  is limited to one commit.
+- **Commit messages**: every commit must follow Conventional Commits, checked in CI
+  per commit (not just the PR title) via `wagoid/commitlint-github-action`, since
+  rebase merge preserves each commit verbatim on `main`. release-please depends on
+  this to generate the changelog and version bump correctly.
 - **Releases**: conventional commits + **release-please** (manifest mode). It keeps a
   release PR open with accumulated changelog/version bumps; merging it (auto-merge
   allowed for full automation) creates tags/releases, and tag-triggered workflows
