@@ -9,7 +9,8 @@
       "package-name": "trastienda",
       "extra-files": [
         { "type": "json", "path": "apps/api/package.json", "jsonpath": "$.version" },
-        { "type": "json", "path": "apps/admin/package.json", "jsonpath": "$.version" }
+        { "type": "json", "path": "apps/admin/package.json", "jsonpath": "$.version" },
+        { "type": "json", "path": "apps/api/openapi.json", "jsonpath": "$.info.version" }
       ]
     }
   }

@@ -2,6 +2,7 @@ import swagger from '@fastify/swagger';
 import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { fastify, type FastifyServerOptions } from 'fastify';
 
+import packageJson from '../package.json' with { type: 'json' };
 import { healthPlugin } from './plugins/health.ts';
 
 export interface AppOptions {
@@ -25,7 +26,7 @@ export async function buildApp(options: AppOptions = {}) {
       info: {
         title: 'trastienda API',
         description: 'Inventory and sales management for small retail.',
-        version: '0.0.0',
+        version: packageJson.version,
       },
     },
   });
