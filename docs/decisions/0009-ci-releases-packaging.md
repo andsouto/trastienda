@@ -24,9 +24,11 @@ repos.
   rebase merge preserves each commit verbatim on `main`. release-please depends on
   this to generate the changelog and version bump correctly.
 - **Releases**: conventional commits + **release-please** (manifest mode). It keeps a
-  release PR open with accumulated changelog/version bumps; merging it (auto-merge
-  allowed for full automation) creates tags/releases, and tag-triggered workflows
-  build artifacts.
+  release PR open with accumulated changelog/version bumps; merging it creates
+  tags/releases, and tag-triggered workflows build artifacts. Merge is manual and
+  deliberate for now — nothing installable exists yet, so nothing should auto-publish.
+  Repo-level auto-merge is a future option once there's a release worth shipping the
+  moment it's ready, not a current setting.
 - **Release artifacts, all living in this repo** (packaging is part of the product):
   multi-arch Docker images to GHCR, a docker-compose quickstart, a reference Kustomize
   base in `deploy/`, and a **Timoni module** published as an OCI artifact to GHCR.

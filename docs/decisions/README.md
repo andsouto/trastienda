@@ -5,6 +5,10 @@ enough rationale to know how to act — history lives in git, not in the documen
 Update them in place as decisions get refined; simplify or delete an ADR when what it
 describes is implemented and self-evident in the code.
 
+They are not a spec to satisfy at all costs. If reality or intent diverges from what an
+ADR says, that's a prompt to edit the ADR, not to contort the implementation (or delay
+work) to match stale text.
+
 | # | Decision |
 |---|----------|
 | [0001](0001-repository-strategy.md) | Monorepo for the product; deploy config and shop in separate repos |
