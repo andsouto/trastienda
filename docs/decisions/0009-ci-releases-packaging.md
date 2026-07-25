@@ -26,9 +26,30 @@ repos.
 - **Releases**: conventional commits + **release-please** (manifest mode). It keeps a
   release PR open with accumulated changelog/version bumps; merging it creates
   tags/releases, and tag-triggered workflows build artifacts. Merge is manual and
-  deliberate for now — nothing installable exists yet, so nothing should auto-publish.
-  Repo-level auto-merge is a future option once there's a release worth shipping the
-  moment it's ready, not a current setting.
+  deliberate — nothing installable exists yet, so nothing should auto-publish. The repo
+  does allow auto-merge (Renovate uses it for dependency PRs), but nothing enables it on
+  the release PR: publishing stays a human decision.
+- **Dependency updates**: **Renovate** (Mend-hosted GitHub App, free for public repos),
+  configured in `renovate.json` on the `config:best-practices` preset — npm updates wait
+  3 days before being offered (window for a malicious publish to be caught), action
+  versions are pinned to digests, abandoned packages get flagged. Commit types follow
+  Renovate's default split, which matches what ships: runtime `dependencies` land as
+  `fix(deps)`, so they bump the patch version and appear in the changelog — a Fastify or
+  Prisma bump changes the artifact the user runs; devDependencies, workflow actions and
+  lockfile maintenance land as `chore(deps)` and stay out of both. This decides what a
+  release *contains*, not when it happens — that stays the manual merge above. Dev
+  tooling (patch/minor) and workflow actions automerge once CI is green; majors, Angular and the
+  runtime backbone (Fastify, Prisma, TypeBox) wait for a human. Automerge runs through
+  GitHub's native auto-merge, which lands the PR the moment checks pass; the merge
+  method is auto-detected from repo settings, and since the repo only allows rebase,
+  linear history holds. No schedule window: PRs arrive when upstream publishes, the
+  Dependency Dashboard is the control surface. Add a window if the volume ever becomes
+  noise.
+- **Versions are pinned exactly**, dependencies and devDependencies alike
+  (`:pinAllExceptPeerDependencies`). These are applications, not published libraries:
+  nothing downstream has to resolve our ranges, so the reason to keep them disappears.
+  A lockfile pins the tree but hides direct-dependency drift from the diff; pinning puts
+  every version change in a reviewable PR. `engines` stays a range.
 - **Release artifacts, all living in this repo** (packaging is part of the product):
   multi-arch Docker images to GHCR, a docker-compose quickstart, a reference Kustomize
   base in `deploy/`, and a **Timoni module** published as an OCI artifact to GHCR.
@@ -44,3 +65,5 @@ repos.
   to npm library constellations than to an app releasing Docker images. Re-evaluate if
   `contracts` becomes a published npm package with external consumers.
 - **Helm**: maintainer dislikes it; Kustomize + Timoni cover the spectrum.
+- **Dependabot**: native and zero-setup, but its grouping is too coarse for a pnpm
+  workspace and it ignores `mise.toml`.
