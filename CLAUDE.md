@@ -36,8 +36,14 @@ living documents: update in place, git is the history.
 - **CI/CD**: GitHub Actions (`.github/workflows/ci.yml`), conventional commits,
   release-please manifest mode with a single product version (ADR-0009). `main` only
   takes rebase merges (no merge commits, no squash), gated by a branch-protection
-  ruleset requiring green CI + commit-message lint. Docker images/Kustomize/Timoni
-  arrive when there is something to package.
+  ruleset requiring green CI + commit-message lint. Releases are merged by hand — no
+  auto-publish while there is nothing installable. **Renovate** (`renovate.json`,
+  `config:best-practices`) opens dependency PRs: runtime deps land as `fix(deps)` (they
+  ship, so they earn a patch bump and a changelog line), tooling as `chore(deps)`. Dev
+  tooling and workflow actions automerge on green CI, majors and runtime deps don't.
+  **All versions are pinned exactly** — these are apps, not libraries, so every version
+  change shows up in a reviewable diff.
+  Docker images/Kustomize/Timoni arrive when there is something to package.
 - **License**: AGPL-3.0 (ADR-0010). Name "trastienda" is a provisional codename (ADR-0011).
 
 ## Tooling
