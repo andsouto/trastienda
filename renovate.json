@@ -1,0 +1,61 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices", ":pinAllExceptPeerDependencies"],
+  "timezone": "Europe/Madrid",
+  "labels": ["dependencies"],
+  "rebaseWhen": "behind-base-branch",
+  "automergeStrategy": "rebase",
+  "lockFileMaintenance": {
+    "automerge": true
+  },
+  "packageRules": [
+    {
+      "description": "Dev tooling: land patch/minor unattended once CI is green",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    },
+    {
+      "description": "Workflow actions move as a block",
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions",
+      "automerge": true
+    },
+    {
+      "description": "Toolchain pins live in mise.toml and packageManager; move them together",
+      "matchPackageNames": ["node", "pnpm"],
+      "groupName": "toolchain"
+    },
+    {
+      "description": "Angular moves as a block, never unattended",
+      "matchPackageNames": [
+        "@angular/**",
+        "@angular-devkit/**",
+        "@schematics/angular",
+        "angular-eslint"
+      ],
+      "groupName": "angular",
+      "automerge": false
+    },
+    {
+      "description": "typescript-eslint moves as a block (it sets the TypeScript ceiling)",
+      "matchPackageNames": ["typescript-eslint", "@typescript-eslint/**"],
+      "groupName": "typescript-eslint"
+    },
+    {
+      "description": "Angular 22 needs >=6.0 <6.1 and typescript-eslint caps at <6.1; TS 7 is a deliberate move, not a bump",
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<6.1.0"
+    },
+    {
+      "description": "Runtime backbone: read the changelog by hand, whatever the bump",
+      "matchPackageNames": ["fastify", "@fastify/**", "prisma", "@prisma/**", "@sinclair/typebox"],
+      "automerge": false
+    },
+    {
+      "description": "A major is a decision, not a chore",
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    }
+  ]
+}
