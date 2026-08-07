@@ -23,7 +23,7 @@
     "@stylistic/eslint-plugin": "5.10.0",
     "@vitest/eslint-plugin": "1.6.26",
     "eslint": "10.8.0",
-    "eslint-plugin-perfectionist": "5.10.0",
+    "eslint-plugin-perfectionist": "5.10.1",
     "eslint-plugin-unicorn": "72.0.0",
     "prettier": "3.9.6",
     "typescript": "6.0.3",
