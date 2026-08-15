@@ -17,7 +17,9 @@ valid — this was a preference call.
 - Prisma-generated types live only in `infrastructure/`; repositories map rows to
   domain entities (both directions).
 - Cross-repository atomicity via a **UnitOfWork port** in the application layer,
-  implemented over `prisma.$transaction()` handing out tx-bound repositories.
+  implemented over `prisma.$transaction()` handing out tx-bound repositories. ADR-0013
+  fixes its shape (typed per module, no token registry) and the rules that come with
+  having several locks per transaction.
 - Read models (list screens, reports) may bypass the domain via read-side DAOs
   (lightweight CQRS); `$queryRaw`/TypedSQL is acceptable there.
 
