@@ -5,14 +5,17 @@
 ## Context
 
 The domain is strongly relational and transactional: products with variants
-(size/color = SKU), stock, sales tickets, purchase invoices. A sale must atomically
+(size/color), stock, sales tickets, purchase invoices. A sale must atomically
 decrement stock across N variants.
 
 ## Decision
 
 - PostgreSQL is the only source of truth.
 - Stock is modeled as a **ledger of movements** (goods receipt, sale, adjustment,
-  return); current stock is derived (may be cached later, always rebuildable).
+  return); current stock is derived from it and always rebuildable. ADR-0012 settles
+  how: a `StockLevel` row per variant and location, written in the same transaction as
+  the movement, is what holds the invariant and what gets locked — the ledger stays the
+  accounting source of truth but is not what a sale reads to decide.
 - Flexible per-product attributes use JSONB columns.
 - Photos/binaries go to object storage (S3/R2/MinIO); the DB stores only keys/URLs.
 - Money is stored as integer cents, never floats.

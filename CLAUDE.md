@@ -5,11 +5,13 @@ variants (size/color), stock tracked as a movement ledger, sales tickets and pur
 invoices. Backend API + admin web app. A future public online shop will be an external
 consumer of the same API (out of scope for now, separate private repo).
 
-**Status (2026-07-21):** monorepo scaffolded and verified (CI, compose, codegen chain);
+**Status (2026-08-03):** monorepo scaffolded and verified (CI, compose, codegen chain);
 commit messages now linted per-commit in CI (rebase-only merges to `main`, ADR-0009);
 repo is public with the branch-protection ruleset live (PR required, `verify` +
-`commitlint` checks required and up to date, linear history, no force-push). No domain
-code yet. Foundational decisions are ADRs in
+`commitlint` checks required and up to date, linear history, no force-push). **No
+domain code yet, but the domain model is designed** (ADR-0012/0013/0014) and the
+implementation order is in [docs/roadmap.md](docs/roadmap.md) — next up is block 1,
+foundations. Foundational decisions are ADRs in
 [docs/decisions/](docs/decisions/) — read them before proposing changes to stack or
 architecture; do not re-litigate settled decisions without new evidence. ADRs are
 living documents: update in place, git is the history.
@@ -92,15 +94,49 @@ living documents: update in place, git is the history.
   `application/` defines ports; `infrastructure/` holds Fastify routes and Prisma
   repositories. Composition root is `apps/api/src/main.ts`. Money is stored as
   integer cents.
+- Modules never import each other. A module declares a port in its own vocabulary and
+  the adapter lives in `src/bridges/` — the only place allowed to import across
+  modules, and a readable map of every inter-module dependency (ADR-0013). `shared/`
+  holds the shared kernel (`Money`, `TaxRate`) and is the one exception to the
+  domain-imports-nothing rule.
+
+## Domain model
+
+Designed in full in ADR-0012 (aggregates), ADR-0013 (consistency) and ADR-0014
+(fiscal). The base needed to work without re-reading it all:
+
+- **Aggregate roots**: `Product` (variants are internal entities with globally unique
+  UUIDs — that UUID is what everything else references), `StockLevel` (variant +
+  location; the ledger is not the aggregate), `Ticket` (born closed, immutable).
+- **Everything is append-only.** Stock movements, tickets and fiscal records are
+  never updated or deleted; corrections are compensating facts. Nothing referenced is
+  hard-deleted (`ON DELETE RESTRICT`); archiving is the normal path.
+- **Documents freeze what they state** — price, tax rate, textual description, the
+  recipient's tax details. Catalog changes never rewrite history, and this is also
+  what lets GDPR erasure and fiscal retention coexist.
+- **Every fact records its actor and its moment** (`occurredAt` orders, `recordedAt`
+  audits, actor from the token). Impossible to reconstruct later.
+- **Negative stock is allowed**; blocking a sale is a policy in `application/`, never
+  a domain invariant. Valuation is derived (daily weighted average), never stored,
+  except the frozen year-end snapshot.
+- **Cross-aggregate invariants always name their mechanism** (unique index, row lock,
+  or an explicit "nothing"). See the table in ADR-0013.
 
 ## Pending decisions
 
 - Angular UI library: ng-zorro-antd vs Angular Material vs Taiga UI vs spartan-ng.
 - Admin HTTP client for the generated types (openapi-fetch vs typed HttpClient wrappers).
 - Final project name (codename is fine until artifacts are published).
+- How the *declaración responsable* required by RD 1007/2023 works for AGPL software
+  deployed and modified by third parties (ADR-0014); needs advice, not a guess.
 
 ## Next steps
 
-1. Domain model design session: aggregates for catalog/inventory/sales, stock ledger
-   invariants, UnitOfWork pattern.
+Implementation order lives in [docs/roadmap.md](docs/roadmap.md). Immediately:
+
+1. Block 1 (foundations): shared kernel (`Money`, `TaxRate`) with its boundaries
+   exception, business configuration (tax regime + seeded editable rates), reference
+   data seeds (scales, palettes).
 2. OIDC auth plugin in the API (jose + remote JWKS) once there are endpoints to protect.
+3. Block 2 (catalog) as the first full vertical slice, Prisma schema and first
+   migration included.

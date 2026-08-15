@@ -15,6 +15,9 @@ project is also a learning/pleasure exercise in building that architecture by ha
   repositories).
 - Constructor injection everywhere; **no DI container**. A single manual composition
   root in `main.ts` wires the graph.
+- Modules never import each other. Where one needs another, it declares a port in its
+  own vocabulary and the adapter lives in `src/bridges/`, the only place allowed to
+  import across modules — see ADR-0013.
 
 ## Rationale
 
