@@ -90,6 +90,12 @@ document freezes.
   the catalog state it was built from, **stale references are a normal case, not an
   error**: a line whose variant was archived or discontinued in the meantime surfaces
   at checkout for the operator to resolve, and never makes the cart unloadable.
+- **The cart syncs across devices** — scanning on a phone and charging on a tablet is
+  an ordinary flow — so it is persisted server-side with a version, each device keeping
+  a local copy and queueing changes while offline. The real pattern is a *sequential
+  handover*, not concurrent editing, so a rejected version is resolved by reloading and
+  reapplying; CRDTs would be machinery for a race that barely happens. Client-generated
+  line ids are what keep a retry over a flaky connection from duplicating lines.
 - **Lines freeze** the variant id, a textual description snapshot, unit price with
   VAT, tax rate, discount and quantity, plus the base and tax computed at emission.
   The id keeps traceability; the text keeps the document readable after a rename.
