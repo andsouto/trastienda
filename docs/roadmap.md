@@ -11,10 +11,16 @@ The domain decisions behind these are in [ADR-0012](decisions/0012-domain-model-
 
 ## 1. Foundations
 
-Shared kernel (`Money`, `TaxRate`) with its `eslint-plugin-boundaries` exception,
-business configuration (tax regime, seeded and editable rates), reference data (scales
-and palettes by seed, no management UI), and the OIDC plugin of ADR-0008 as soon as
-there is an endpoint to protect.
+**The OIDC plugin of ADR-0008 comes first**, before the endpoints it protects. It
+depends on nothing in the domain and is testable on its own against a fake JWKS, so
+putting it first means the first route ever written already has its final shape —
+rather than being rewritten once authentication shows up.
+
+Then the shared kernel (`Money`, `TaxRate`) with its `eslint-plugin-boundaries`
+exception and the `bridges/` rules of ADR-0013 — the first time that architecture
+becomes executable config rather than a document — business configuration (tax regime,
+seeded and editable rates), and reference data (scales and palettes by seed, no
+management UI).
 
 ## 2. Catalog
 
