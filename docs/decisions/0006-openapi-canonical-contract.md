@@ -16,7 +16,9 @@ consume the same API without coupling to its internals.
 - **Internal consumers use the same path as external ones**: the admin generates its
   types from `openapi.json` with `openapi-typescript`
   (`apps/admin/src/app/core/api/schema.d.ts`, also committed). CI regenerates both
-  files and fails if they drift from the schemas.
+  files and fails if they drift from the schemas. Those types are consumed at runtime
+  through a thin wrapper over Angular's `HttpClient` (ADR-0007); generation and runtime
+  are separate choices.
 - There is **no shared contracts package**: TypeBox schemas are an implementation
   detail of the API's HTTP adapter and never leave `apps/api`.
 
