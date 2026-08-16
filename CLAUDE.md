@@ -140,9 +140,10 @@ Designed in full in ADR-0012 (aggregates), ADR-0013 (consistency) and ADR-0014
 
 Implementation order lives in [docs/roadmap.md](docs/roadmap.md). Immediately:
 
-1. Block 1 (foundations): shared kernel (`Money`, `TaxRate`) with its boundaries
-   exception, business configuration (tax regime + seeded editable rates), reference
-   data seeds (scales, palettes).
-2. OIDC auth plugin in the API (jose + remote JWKS) once there are endpoints to protect.
+1. OIDC auth plugin in the API (jose + remote JWKS) — first, so the first route is
+   written with its final shape instead of being retrofitted.
+2. Rest of block 1: shared kernel (`Money`, `TaxRate`) with its boundaries and
+   `bridges/` rules in the eslint config, business configuration (tax regime + seeded
+   editable rates), reference data seeds (scales, palettes).
 3. Block 2 (catalog) as the first full vertical slice, Prisma schema and first
    migration included.
