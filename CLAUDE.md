@@ -30,7 +30,11 @@ living documents: update in place, git is the history.
   generates its types from it with openapi-typescript (ADR-0006). Both generated files
   are committed; `pnpm codegen` regenerates, CI fails on drift.
 - **Frontend**: Angular 22 (standalone, signals, zoneless), Vitest via `ng test`.
-  UI library still pending — shortlist in ADR-0007.
+  Resource APIs (`resource`/`rxResource`/`httpResource`) are stable in v22 and are the
+  intended data-fetching path. HTTP goes through a thin typed wrapper over `HttpClient`
+  fed by the generated `schema.d.ts` — interceptors are where auth, retries and the
+  offline cart queue live (ADR-0007). UI library narrowed to Taiga UI (leading) vs
+  ng-zorro-antd, decided by a spike once there are real screens.
 - **Auth**: the API is a provider-agnostic OIDC resource server; Zitadel is the
   reference IdP in compose at http://localhost:8080 (ADR-0008). Tests use a fake JWKS.
 - **Repo**: pnpm-workspaces monorepo — `apps/api`, `apps/admin` (ADR-0001). No task
@@ -46,7 +50,7 @@ living documents: update in place, git is the history.
   **All versions are pinned exactly** — these are apps, not libraries, so every version
   change shows up in a reviewable diff.
   Docker images/Kustomize/Timoni arrive when there is something to package.
-- **License**: AGPL-3.0 (ADR-0010). Name "trastienda" is a provisional codename (ADR-0011).
+- **License**: AGPL-3.0 (ADR-0010). "trastienda" is the definitive name (ADR-0011).
 
 ## Tooling
 
@@ -124,11 +128,13 @@ Designed in full in ADR-0012 (aggregates), ADR-0013 (consistency) and ADR-0014
 
 ## Pending decisions
 
-- Angular UI library: ng-zorro-antd vs Angular Material vs Taiga UI vs spartan-ng.
-- Admin HTTP client for the generated types (openapi-fetch vs typed HttpClient wrappers).
-- Final project name (codename is fine until artifacts are published).
+- Angular UI library: **Taiga UI vs ng-zorro-antd** (ADR-0007). Material and spartan-ng
+  are out. Taiga leads on catalog, maintenance health and peer range; ng-zorro still has
+  the better data table, so the tiebreaker is one real catalog screen built both ways —
+  which needs an API first.
 - How the *declaración responsable* required by RD 1007/2023 works for AGPL software
   deployed and modified by third parties (ADR-0014); needs advice, not a guess.
+- A formal trademark scan for "trastienda" before publishing artifacts (ADR-0011).
 
 ## Next steps
 
