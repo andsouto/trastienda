@@ -123,7 +123,7 @@ services:
       - traefik.http.routers.zitadel-api.priority=100
 
   zitadel-login:
-    image: ghcr.io/zitadel/zitadel-login:v4.13.0@sha256:b1048d2652988a32518d5e4a26eecea0dd1db0792e144bd9715c7b96fdf3b1fd
+    image: ghcr.io/zitadel/zitadel-login:v4.17.1@sha256:8035df2409afb35a3999482ee98e453261715f98d47e4b62e948e4a1ddf4345f
     restart: unless-stopped
     user: '0'
     environment:
