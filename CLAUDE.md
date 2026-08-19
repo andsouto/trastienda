@@ -45,8 +45,10 @@ living documents: update in place, git is the history.
   ruleset requiring green CI + commit-message lint. Releases are merged by hand — no
   auto-publish while there is nothing installable. **Renovate** (`renovate.json`,
   `config:best-practices`) opens dependency PRs: runtime deps land as `fix(deps)` (they
-  ship, so they earn a patch bump and a changelog line), tooling as `chore(deps)`. Dev
-  tooling and workflow actions automerge on green CI, majors and runtime deps don't.
+  ship, so they earn a patch bump and a changelog line), tooling as `chore(deps)`.
+  **Updates automerge by default on green CI** — the pipeline is the evidence and the
+  release is never auto-published. Only two things wait for a human: majors, and Zitadel
+  minors (CI never boots it and it migrates its schema on start, so it is tried by hand).
   **All versions are pinned exactly** — these are apps, not libraries, so every version
   change shows up in a reviewable diff.
   Docker images/Kustomize/Timoni arrive when there is something to package.
@@ -54,8 +56,10 @@ living documents: update in place, git is the history.
 
 ## Tooling
 
-- **mise** pins node + pnpm (`mise.toml`); `packageManager` in package.json is the
-  authoritative pnpm pin (no corepack — pnpm self-switches to it).
+- **mise** pins node + pnpm (`mise.toml`) and is the source for the node version; the
+  workflow has to repeat it (setup-node cannot read `mise.toml` yet), so Renovate moves
+  both pins in one PR and CI fails if they drift apart. `packageManager` in package.json
+  is the authoritative pnpm pin (no corepack — pnpm self-switches to it).
 - **TypeScript 6.0.x everywhere**: required by Angular 22 (`>=6.0 <6.1`) and the
   ceiling of typescript-eslint (`<6.1`). Move to TS 7 when typescript-eslint allows.
 - **ESLint owns TS/JS, config per app** (`apps/api/eslint.config.js`,

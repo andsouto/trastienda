@@ -30,21 +30,27 @@ repos.
   does allow auto-merge (Renovate uses it for dependency PRs), but nothing enables it on
   the release PR: publishing stays a human decision.
 - **Dependency updates**: **Renovate** (Mend-hosted GitHub App, free for public repos),
-  configured in `renovate.json` on the `config:best-practices` preset — npm updates wait
-  3 days before being offered (window for a malicious publish to be caught), action
-  versions are pinned to digests, abandoned packages get flagged. Commit types follow
-  Renovate's default split, which matches what ships: runtime `dependencies` land as
-  `fix(deps)`, so they bump the patch version and appear in the changelog — a Fastify or
-  Prisma bump changes the artifact the user runs; devDependencies, workflow actions and
-  lockfile maintenance land as `chore(deps)` and stay out of both. This decides what a
-  release *contains*, not when it happens — that stays the manual merge above. Dev
-  tooling (patch/minor) and workflow actions automerge once CI is green; majors, Angular and the
-  runtime backbone (Fastify, Prisma, TypeBox) wait for a human. Automerge runs through
-  GitHub's native auto-merge, which lands the PR the moment checks pass; the merge
-  method is auto-detected from repo settings, and since the repo only allows rebase,
-  linear history holds. No schedule window: PRs arrive when upstream publishes, the
-  Dependency Dashboard is the control surface. Add a window if the volume ever becomes
-  noise.
+  configured in `renovate.json` on the `config:best-practices` preset — updates wait 3
+  days before being offered (window for a malicious publish to be caught), action versions
+  are pinned to digests, abandoned packages get flagged. `minimumReleaseAge` is set at the
+  root because the preset only applies it to npm, and docker images land unattended too.
+  Commit types follow Renovate's default split, which matches what ships: runtime
+  `dependencies` land as `fix(deps)`, so they bump the patch version and appear in the
+  changelog — a Fastify or Prisma bump changes the artifact the user runs;
+  devDependencies, workflow actions and lockfile maintenance land as `chore(deps)` and
+  stay out of both. This decides what a release *contains*, not when it happens — that
+  stays the manual merge above. **Updates automerge by default** once CI is green: the
+  pipeline is the evidence (lint, typecheck, contract drift, tests, build), and nothing
+  publishes itself, since the release PR above is merged by hand — an unattended
+  `fix(deps)` reaches nobody until that decision is taken. Two exceptions wait for a
+  human: **majors**, which are decisions rather than chores, and **Zitadel minors**,
+  because nothing in CI boots it and it migrates its schema on start, so a bad bump fails
+  silently and is not undone by reverting `compose.yaml` — it is checked by hand against
+  the local stack instead. Automerge runs through GitHub's native auto-merge, which lands
+  the PR the moment checks pass; the merge method is auto-detected from repo settings, and
+  since the repo only allows rebase, linear history holds. No schedule window: PRs arrive
+  when upstream publishes, the Dependency Dashboard is the control surface. Add a window
+  if the volume ever becomes noise.
 - **Versions are pinned exactly**, dependencies and devDependencies alike
   (`:pinAllExceptPeerDependencies`). These are applications, not published libraries:
   nothing downstream has to resolve our ranges, so the reason to keep them disappears.
