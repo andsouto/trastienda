@@ -5,37 +5,31 @@
   "labels": ["dependencies"],
   "rebaseWhen": "behind-base-branch",
   "automergeStrategy": "rebase",
+  "automerge": true,
+  "minimumReleaseAge": "3 days",
   "lockFileMaintenance": {
     "automerge": true
   },
   "packageRules": [
     {
-      "description": "Dev tooling: land patch/minor unattended once CI is green",
-      "matchDepTypes": ["devDependencies"],
-      "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true
-    },
-    {
       "description": "Workflow actions move as a block",
       "matchManagers": ["github-actions"],
-      "groupName": "github actions",
-      "automerge": true
+      "groupName": "github actions"
     },
     {
-      "description": "Toolchain pins live in mise.toml and packageManager; move them together",
-      "matchPackageNames": ["node", "pnpm"],
+      "description": "mise.toml is the single source for node, packageManager for pnpm; move them together",
+      "matchDepNames": ["node", "pnpm"],
       "groupName": "toolchain"
     },
     {
-      "description": "Angular moves as a block, never unattended",
+      "description": "Angular moves as a block",
       "matchPackageNames": [
         "@angular/**",
         "@angular-devkit/**",
         "@schematics/angular",
         "angular-eslint"
       ],
-      "groupName": "angular",
-      "automerge": false
+      "groupName": "angular"
     },
     {
       "description": "typescript-eslint moves as a block (it sets the TypeScript ceiling)",
@@ -43,18 +37,24 @@
       "groupName": "typescript-eslint"
     },
     {
+      "description": "Zitadel api and login share a tag: they never move apart",
+      "matchPackageNames": ["ghcr.io/zitadel/**"],
+      "groupName": "zitadel"
+    },
+    {
       "description": "Angular 22 needs >=6.0 <6.1 and typescript-eslint caps at <6.1; TS 7 is a deliberate move, not a bump",
       "matchPackageNames": ["typescript"],
       "allowedVersions": "<6.1.0"
     },
     {
-      "description": "Runtime backbone: read the changelog by hand, whatever the bump",
-      "matchPackageNames": ["fastify", "@fastify/**", "prisma", "@prisma/**", "@sinclair/typebox"],
+      "description": "A major is a decision, not a chore",
+      "matchUpdateTypes": ["major"],
       "automerge": false
     },
     {
-      "description": "A major is a decision, not a chore",
-      "matchUpdateTypes": ["major"],
+      "description": "Nothing in CI boots Zitadel and it migrates its schema on start: try it by hand, then merge",
+      "matchPackageNames": ["ghcr.io/zitadel/**"],
+      "matchUpdateTypes": ["minor"],
       "automerge": false
     }
   ]
