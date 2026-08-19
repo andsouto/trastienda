@@ -33,12 +33,15 @@ repos.
   configured in `renovate.json` on the `config:best-practices` preset — updates wait 3
   days before being offered (window for a malicious publish to be caught), action versions
   are pinned to digests, abandoned packages get flagged. `minimumReleaseAge` is set at the
-  root because the preset only applies it to npm, and docker images land unattended too.
-  Commit types follow Renovate's default split, which matches what ships: runtime
-  `dependencies` land as `fix(deps)`, so they bump the patch version and appear in the
-  changelog — a Fastify or Prisma bump changes the artifact the user runs;
-  devDependencies, workflow actions and lockfile maintenance land as `chore(deps)` and
-  stay out of both. This decides what a release *contains*, not when it happens — that
+  root because the preset only applies it to npm, and docker images land unattended too —
+  with `minimumReleaseAgeBehaviour` relaxed to `timestamp-optional`, since Renovate
+  resolves a release timestamp from Docker Hub but not from ghcr, and the default treats
+  an unknown timestamp as too young forever, which silently held the Zitadel update back
+  with no branch and no PR. Commit types follow Renovate's default split, which matches
+  what ships: runtime `dependencies` land as `fix(deps)`, so they bump the patch version
+  and appear in the changelog — a Fastify or Prisma bump changes the artifact the user
+  runs; devDependencies, workflow actions and lockfile maintenance land as `chore(deps)`
+  and stay out of both. This decides what a release *contains*, not when it happens — that
   stays the manual merge above. **Updates automerge by default** once CI is green: the
   pipeline is the evidence (lint, typecheck, contract drift, tests, build), and nothing
   publishes itself, since the release PR above is merged by hand — an unattended
