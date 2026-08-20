@@ -59,7 +59,7 @@ services:
   # http://localhost:8080. First admin login: zitadel-admin@zitadel.localhost /
   # Password1!
   zitadel-proxy:
-    image: traefik:v3.6.8@sha256:90099f8948c828ecf0ababd711a4359a2443eba12261c1df2f548a3b1d815938
+    image: traefik:v3.7.11@sha256:5203c3f39ca70de6790d964624e042463ffbd57715bc82be155cf224c0dd5144
     restart: unless-stopped
     command:
       - --providers.docker=true
