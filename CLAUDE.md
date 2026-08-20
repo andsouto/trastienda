@@ -94,6 +94,12 @@ living documents: update in place, git is the history.
 - Conventional commits, enforced in CI per commit (`wagoid/commitlint-github-action`,
   ADR-0009) — not just the PR title, since `main` only takes rebase merges and every
   commit lands verbatim; release-please depends on them.
+- **Commit and PR bodies go to the point**: what changed in a line (a short paragraph
+  in a PR), then why, with the evidence that decided it — the numbers are what stop
+  someone reintroducing the thing later. Nothing else. No post-merge instructions,
+  checklists or status reports: those are read as history months later, when they mean
+  nothing and have cost the reader time. Say them in a PR comment instead, and put a
+  long rationale in the ADR the commit references.
 - TypeScript strict; erasable-syntax-only in `apps/api` (no `enum`, no `namespace`,
   no decorators) so code stays compatible with Node's native type stripping. Relative
   imports use the real `.ts` extension (`rewriteRelativeImportExtensions` handles the
