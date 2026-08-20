@@ -6,8 +6,6 @@
   "rebaseWhen": "behind-base-branch",
   "automergeStrategy": "rebase",
   "automerge": true,
-  "minimumReleaseAge": "3 days",
-  "minimumReleaseAgeBehaviour": "timestamp-optional",
   "lockFileMaintenance": {
     "automerge": true
   },

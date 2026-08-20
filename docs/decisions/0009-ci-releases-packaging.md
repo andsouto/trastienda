@@ -30,18 +30,20 @@ repos.
   does allow auto-merge (Renovate uses it for dependency PRs), but nothing enables it on
   the release PR: publishing stays a human decision.
 - **Dependency updates**: **Renovate** (Mend-hosted GitHub App, free for public repos),
-  configured in `renovate.json` on the `config:best-practices` preset — updates wait 3
+  configured in `renovate.json` on the `config:best-practices` preset — npm updates wait 3
   days before being offered (window for a malicious publish to be caught), action versions
-  are pinned to digests, abandoned packages get flagged. `minimumReleaseAge` is set at the
-  root because the preset only applies it to npm, and docker images land unattended too —
-  with `minimumReleaseAgeBehaviour` relaxed to `timestamp-optional`, since Renovate
-  resolves a release timestamp from Docker Hub but not from ghcr, and the default treats
-  an unknown timestamp as too young forever, which silently held the Zitadel update back
-  with no branch and no PR. Commit types follow Renovate's default split, which matches
-  what ships: runtime `dependencies` land as `fix(deps)`, so they bump the patch version
-  and appear in the changelog — a Fastify or Prisma bump changes the artifact the user
-  runs; devDependencies, workflow actions and lockfile maintenance land as `chore(deps)`
-  and stay out of both. This decides what a release *contains*, not when it happens — that
+  are pinned to digests, abandoned packages get flagged. The wait stays npm-only, as the
+  preset has it: extending `minimumReleaseAge` to the root so images got the same window
+  was tried and reverted, because it forces Renovate to resolve a release timestamp for
+  every candidate across the ~5.6k tags these images carry, which exhausted the hosted
+  runner's 3 GB and killed every run with a kernel OOM. It also held Zitadel back forever
+  on the way, since ghcr publishes no timestamp and an unknown one counts as too young.
+  Images are pinned by digest and are development-only, so the window bought little to
+  begin with. Commit types follow Renovate's default split, which matches what ships:
+  runtime `dependencies` land as `fix(deps)`, so they bump the patch version and appear in
+  the changelog — a Fastify or Prisma bump changes the artifact the user runs;
+  devDependencies, workflow actions and lockfile maintenance land as `chore(deps)` and
+  stay out of both. This decides what a release *contains*, not when it happens — that
   stays the manual merge above. **Updates automerge by default** once CI is green: the
   pipeline is the evidence (lint, typecheck, contract drift, tests, build), and nothing
   publishes itself, since the release PR above is merged by hand — an unattended
