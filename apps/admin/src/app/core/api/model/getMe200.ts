@@ -6,6 +6,6 @@
  * OpenAPI spec version: 0.0.0
  */
 
-export * from './getHealth200';
-export * from './getHealth200Status';
-export * from './getMe200';
+export type GetMe200 = {
+  subject: string;
+};
