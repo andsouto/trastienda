@@ -26,7 +26,8 @@ import {
 } from 'rxjs';
 
 import type {
-  GetHealth200
+  GetHealth200,
+  GetMe200
 } from '../model';
 
 
@@ -110,6 +111,40 @@ export class SystemService {
       }
     );
   }
+/**
+ * @summary The authenticated caller
+ */
+ getMe<TData = GetMe200>( options?: HttpClientBodyOptions): Observable<TData>;
+ getMe<TData = GetMe200>( options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ getMe<TData = GetMe200>( options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  getMe<TData = GetMe200>(
+     options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/me`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/me`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.get<TData>(
+      `/me`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
 };
 
 export type GetHealthClientResult = NonNullable<GetHealth200>
+export type GetMeClientResult = NonNullable<GetMe200>
