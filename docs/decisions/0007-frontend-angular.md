@@ -1,4 +1,4 @@
-# ADR-0007: Admin frontend in modern Angular; HTTP client settled, UI library narrowed
+# ADR-0007: Admin frontend in modern Angular; orval for the API client, UI library narrowed
 
 - Status: accepted (UI library: narrowed to two, pending a spike)
 
@@ -13,42 +13,39 @@ Modern Angular: standalone components, signals, new control flow, zoneless. As o
 Angular 22 the resource APIs (`resource`, `rxResource`, `httpResource`) are stable and
 zoneless is the default path, so both are load-bearing rather than aspirational.
 
-### HTTP client: a typed wrapper over `HttpClient`
+### HTTP client: orval, generating against `openapi.json`
 
-Types keep coming from the contract — `openapi-typescript` generates `schema.d.ts`
-from `openapi.json` (ADR-0006) and that does not change. What is decided here is the
-*runtime*: **Angular's `HttpClient`, behind a small generic wrapper** that navigates
-the generated `paths` type, so a route literal types its own response:
+The contract stays the source (ADR-0006): the admin generates its client from
+`openapi.json`, the same artifact any external consumer gets. What is decided here is
+*how*: **orval** (MIT, v8.24.0, ~1.6M weekly downloads, 74 contributors over the last
+quarter), configured with `override.angular.retrievalClient: 'both'`.
 
-```ts
-type GetPath = { [P in keyof paths]: paths[P] extends { get: object } ? P : never }[keyof paths];
-type JsonOk<Op> = Op extends { responses: { 200: { content: { 'application/json': infer B } } } } ? B : never;
+That mode emits exactly the split this app wants: **`httpResource` helpers for reads**
+(signal-first, which is the Angular 22 data path) in `*.resource.ts`, and **injectable
+`HttpClient` services for writes**. Both sit on `HttpClient`, so **interceptors keep
+being where the auth token, retries and the offline cart queue (ADR-0012) live** — the
+requirement that drove this decision in the first place.
 
-get<P extends GetPath>(path: P) {
-  return this.#http.get<JsonOk<paths[P]['get']>>(`/api${path}`);
-}
-```
+Orval replaces `openapi-typescript` in the admin: it generates its own models rather
+than a `paths` type. The principle of ADR-0006 is untouched, only the generator
+changes.
 
-Path params, query strings and request bodies take it to roughly 80 lines; the shape
-is the same conditional-type navigation.
+`@orval/mock` (MSW) and `@orval/zod` come with it. Mocks are worth using for admin
+tests without a live API; runtime response validation via zod is available and not
+adopted — the API already validates, and paying that cost twice needs a reason.
 
-`HttpClient` rather than `openapi-fetch` because **interceptors** are where the auth
-token, retries and — decisively — the offline cart queue (ADR-0012) belong, and a
-`fetch`-based client would mean rebuilding all of it. `provideHttpClientTesting` comes
-along for free.
+**Risk, stated precisely:** orval's lineage is React (react-query is its flagship) and
+the Angular target — `httpResource` support especially — is younger. The ~1.6M weekly
+downloads belong to the meta package that pulls `@orval/angular` as a dependency, so
+they are *not* evidence of the Angular target being widely exercised. Mitigation is
+inherent to generators: the emitted code is ours, so disappointing output means
+switching tools, not being stranded. Falling back to a hand-written typed wrapper over
+`HttpClient` costs roughly 80 lines of conditional-type navigation over the generated
+`paths`, which was the prior decision here and remains the escape hatch.
 
-**Alternative kept on file: `ng-openapi-gen`** (MIT, ~158k weekly downloads, v1.0.5).
-It generates injectable Angular services with typed methods, so there is no glue to
-write at all, and since it also builds on `HttpClient` the interceptor story is
-identical. It loses here on three counts: it *replaces* `openapi-typescript` in the
-admin rather than complementing it (so it moves what ADR-0006 settled), it commits a
-large volume of generated code, and it had no release between November 2025 and this
-decision while Angular ships two majors a year. What would flip it: many multipart
-uploads, complex query serialisation, or an endpoint count where hand-maintained
-conditional types stop being cheaper than regenerating. Reversible either way.
-
-Note for the record: returning Observables is *not* an argument against generated
-clients — `rxResource` bridges them to signals and is stable in v22.
+**Smoke test, deferred to block 1**, once the first real endpoint exists: generate and
+check that the `both` output is idiomatic and that interceptors compose as expected.
+Same posture as the UI library spike below — decided on paper, confirmed on contact.
 
 ### UI library: Taiga UI leading, ng-zorro-antd the alternative
 
@@ -97,11 +94,16 @@ access to sanctions before, and that is a continuity question.
 - **PrimeNG**: disqualified June 2026 — v22+ moved to a commercial license (PrimeUI),
   community edition gated by company size/revenue; existing MIT versions frozen.
   Unacceptable dependency for an AGPL open-source product.
-- **`openapi-fetch`**: see above — no interceptors, so auth, retries and the offline
-  queue would all be rebuilt.
+- **`openapi-fetch`**: no interceptors, so auth, retries and the offline queue would
+  all be rebuilt on a `fetch` client.
+- **A hand-written typed wrapper over `HttpClient`**: the previous decision here, and
+  still the fallback. It loses to orval on nothing except dependency count, and orval
+  additionally generates the `httpResource` half that the wrapper would hand-roll.
+- **`ng-openapi-gen`**: the closest competitor (MIT, ~158k weekly downloads, v1.0.5),
+  but no release between November 2025 and this decision while Angular ships two
+  majors a year, effectively one maintainer, and no `httpResource` generation.
 - **`openapi-fetch-angular`**: exactly the right idea, effectively dead (last publish
   March 2024, single digit weekly downloads).
-- **`ng-openapi`**: active but pre-1.0, single maintainer, and ~3k weekly downloads
-  against `ng-openapi-gen`'s ~158k.
+- **`ng-openapi`**: active but pre-1.0, single maintainer, and ~3k weekly downloads.
 - The future public shop is NOT bound to Angular (SEO/SSR may favor other frameworks);
   decision deferred, separate repo.
