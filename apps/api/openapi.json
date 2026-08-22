@@ -3,7 +3,7 @@
   "info": {
     "title": "trastienda API",
     "description": "Inventory and sales management for small retail.",
-    "version": "0.0.0"
+    "version": "1.0.0"
   },
   "components": {
     "schemas": {}
