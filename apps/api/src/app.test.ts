@@ -2,8 +2,10 @@ import { expect, it } from 'vitest';
 
 import { buildApp } from './app.ts';
 
-it('GET /health responds ok', async () => {
-  const app = await buildApp();
+const rejectEveryToken = () => Promise.reject(new Error('no token is valid here'));
+
+it('GET /health responds ok without a token', async () => {
+  const app = await buildApp({ verifyToken: rejectEveryToken });
 
   const response = await app.inject({ method: 'GET', url: '/health' });
 
