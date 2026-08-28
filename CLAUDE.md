@@ -27,14 +27,19 @@ living documents: update in place, git is the history.
   object storage, never the DB.
 - **API contract**: TypeBox schemas drive validation, serialization and OpenAPI.
   `apps/api/openapi.json` is the canonical contract for ALL consumers; the admin
-  generates its types from it with openapi-typescript (ADR-0006). Both generated files
-  are committed; `pnpm codegen` regenerates, CI fails on drift.
+  generates its client from it with orval (ADR-0006/0007). Both generated outputs are
+  committed; `pnpm codegen` regenerates, CI fails on drift.
 - **Frontend**: Angular 22 (standalone, signals, zoneless), Vitest via `ng test`.
   Resource APIs (`resource`/`rxResource`/`httpResource`) are stable in v22 and are the
-  intended data-fetching path. HTTP goes through a thin typed wrapper over `HttpClient`
-  fed by the generated `schema.d.ts` — interceptors are where auth, retries and the
-  offline cart queue live (ADR-0007). UI library narrowed to Taiga UI (leading) vs
-  ng-zorro-antd, decided by a spike once there are real screens.
+  intended data-fetching path. The API client is generated from `openapi.json` with
+  **orval** into `apps/admin/src/app/core/api/` (`apps/admin/orval.config.ts`);
+  interceptors are where auth, retries and the offline cart queue live (ADR-0007).
+  `retrievalClient` is `'httpClient'` — injectable services, reads wrapped in
+  `rxResource` — because orval's `httpResource` output did not compile under
+  `exactOptionalPropertyTypes`; fixed upstream in orval-labs/orval#3911 and unreleased
+  as of v8.26.0, so `'both'` lands as a one-line change on the release that carries it.
+  UI library narrowed to Taiga UI (leading) vs ng-zorro-antd, decided by a spike once
+  there are real screens.
 - **Auth**: the API is a provider-agnostic OIDC resource server; Zitadel is the
   reference IdP in compose at http://localhost:8080 (ADR-0008). Tests use a fake JWKS.
 - **Repo**: pnpm-workspaces monorepo — `apps/api`, `apps/admin` (ADR-0001). No task
@@ -82,7 +87,7 @@ living documents: update in place, git is the history.
 
 - `pnpm lint` / `lint:fix`, `pnpm format:check` / `format`, `pnpm typecheck`,
   `pnpm test`, `pnpm build` — all from root.
-- `pnpm codegen` — regenerate `openapi.json` + admin `schema.d.ts` (run after any
+- `pnpm codegen` — regenerate `openapi.json` + the admin's orval client (run after any
   route/schema change and commit the result).
 - `docker compose up -d` — Postgres 18 (:5432), MinIO (:9000/:9001), Zitadel (:8080,
   first login `zitadel-admin@zitadel.localhost` / `Password1!`). Needs `.env`
@@ -145,6 +150,9 @@ Designed in full in ADR-0012 (aggregates), ADR-0013 (consistency) and ADR-0014
 - How the *declaración responsable* required by RD 1007/2023 works for AGPL software
   deployed and modified by third parties (ADR-0014); needs advice, not a guess.
 - A formal trademark scan for "trastienda" before publishing artifacts (ADR-0011).
+- Whether to push orval upstream on `tagsSplitDeduplication`, which does nothing for the
+  Angular client — measured and parked in ADR-0007, to revisit once the client runs
+  `retrievalClient: 'both'` with several tags.
 
 ## Next steps
 
