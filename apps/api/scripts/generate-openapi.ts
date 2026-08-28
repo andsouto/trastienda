@@ -4,8 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { buildApp } from '../src/app.ts';
 
 const app = await buildApp({
-  // Spec generation never serves a request; nothing can call this.
-  verifyToken: () => Promise.reject(new Error('unreachable')),
+  verifyToken: () => Promise.reject(new Error('the OpenAPI generator serves no requests')),
 });
 await app.ready();
 

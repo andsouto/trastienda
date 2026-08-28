@@ -16,8 +16,6 @@ const EnvironmentSchema = Type.Object({
     { default: 'info' },
   ),
   DATABASE_URL: Type.String(),
-  // Not optional: the API refuses to start without an issuer to trust rather
-  // than quietly serving an unauthenticated management surface (ADR-0008).
   OIDC_ISSUER_URL: Type.String({ minLength: 1 }),
   OIDC_AUDIENCE: Type.String({ minLength: 1 }),
 });

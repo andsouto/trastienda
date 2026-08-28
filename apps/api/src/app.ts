@@ -9,10 +9,6 @@ import { identityPlugin } from './plugins/identity.ts';
 
 export interface AppOptions {
   logger?: FastifyServerOptions['logger'];
-  /**
-   * Required on purpose: there is no "authentication disabled" mode to forget
-   * to turn back on. Tests and tooling pass their own verifier.
-   */
   verifyToken: VerifyToken;
 }
 
@@ -45,14 +41,11 @@ export async function buildApp(options: AppOptions) {
 
   app.decorateRequest('auth', null);
 
-  // Public surface: no token. A liveness probe cannot authenticate, and
-  // ADR-0008 wants the future public catalog kept apart from management from
-  // day one.
+  // Outside the protected scope below, so it needs no token.
   app.register(healthPlugin);
 
-  // Everything else. The scope is the boundary — see the note on protectScope.
-  // The inner register is not awaited: awaiting it would close the
-  // encapsulation context and the auth hook would stop covering its siblings.
+  // Not awaited on purpose: awaiting `register` closes the encapsulation
+  // context, and the hook stops covering what is registered after it.
   app.register((scope, _options, done) => {
     protectScope(scope, options.verifyToken);
     scope.register(identityPlugin);
