@@ -11,7 +11,3 @@ allowBuilds:
   prisma: true
   protobufjs: false
   ssh2: false
-
-peerDependencyRules:
-  allowedVersions:
-    'openapi-typescript>typescript': '6'

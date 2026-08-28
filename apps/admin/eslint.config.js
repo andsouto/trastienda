@@ -5,7 +5,7 @@ import {defineConfig, globalIgnores} from 'eslint/config';
 import {baseConfig} from '../../eslint.base.config.js';
 
 export default defineConfig(
-  globalIgnores(['dist/', '.angular/', 'coverage/', 'src/app/core/api/schema.d.ts']),
+  globalIgnores(['dist/', '.angular/', 'coverage/', 'src/app/core/api/']),
 
   ...baseConfig(import.meta.dirname),
 

@@ -54,7 +54,10 @@ jobs:
       - name: Contract codegen is up to date
         run: |
           pnpm codegen
-          git diff --exit-code -- apps/api/openapi.json apps/admin/src/app/core/api/schema.d.ts
+          # --intent-to-add so a generated file that is new (a new tag becomes a
+          # new directory) shows up in the diff instead of passing as untracked
+          git add --intent-to-add -- apps/api/openapi.json apps/admin/src/app/core/api
+          git diff --exit-code -- apps/api/openapi.json apps/admin/src/app/core/api
 
       - name: Test
         run: pnpm test

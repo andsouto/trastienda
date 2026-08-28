@@ -15,7 +15,7 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true
   },
-  "files": [],
+  "files": ["orval.config.ts"],
   "references": [
     {
       "path": "./tsconfig.app.json"
