@@ -14,11 +14,11 @@ consume the same API without coupling to its internals.
   (`@fastify/swagger`). It is committed to the repo — contract changes show up in
   every PR diff — and published as a release artifact.
 - **Internal consumers use the same path as external ones**: the admin generates its
-  types from `openapi.json` with `openapi-typescript`
-  (`apps/admin/src/app/core/api/schema.d.ts`, also committed). CI regenerates both
-  files and fails if they drift from the schemas. Those types are consumed at runtime
-  through a thin wrapper over Angular's `HttpClient` (ADR-0007); generation and runtime
-  are separate choices.
+  client from `openapi.json` with **orval** (ADR-0007) into
+  `apps/admin/src/app/core/api/`, committed like the spec itself. CI regenerates both
+  and fails if they drift from the schemas. Which generator is used is ADR-0007's call
+  and has changed once already; what this ADR fixes is that the admin consumes the
+  published contract and nothing else.
 - There is **no shared contracts package**: TypeBox schemas are an implementation
   detail of the API's HTTP adapter and never leave `apps/api`.
 
@@ -26,8 +26,8 @@ consume the same API without coupling to its internals.
 
 The admin exercises daily the exact consumption path offered to third parties, so any
 fidelity loss in the OpenAPI generation surfaces immediately, internally. Monorepo
-atomicity (ADR-0001) is untouched: one PR changes schemas, `openapi.json`, admin types
-and admin code together, validated in one CI run. Sharing the TypeBox schemas as a
-workspace package was considered and dropped: its only real advantages (type
-propagation without a codegen step, runtime schemas in the frontend) don't outweigh
-leaking API internals to consumers and maintaining a publishable package.
+atomicity (ADR-0001) is untouched: one PR changes schemas, `openapi.json`, the admin's
+generated client and admin code together, validated in one CI run. Sharing the TypeBox
+schemas as a workspace package was considered and dropped: its only real advantages
+(type propagation without a codegen step, runtime schemas in the frontend) don't
+outweigh leaking API internals to consumers and maintaining a publishable package.

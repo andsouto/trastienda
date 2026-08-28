@@ -34,12 +34,12 @@ pnpm format       # Prettier (owns html/scss/json/yaml)
 pnpm typecheck
 pnpm test         # unit + integration (Testcontainers)
 pnpm build
-pnpm codegen      # regenerate openapi.json + admin API types, commit the result
+pnpm codegen      # regenerate openapi.json + the admin client, commit the result
 ```
 
 The canonical API contract is [apps/api/openapi.json](apps/api/openapi.json),
-generated from the TypeBox schemas; the admin consumes it through generated types
-(openapi-typescript), the same path offered to any external consumer.
+generated from the TypeBox schemas; the admin consumes it through a generated client
+(orval), the same path offered to any external consumer.
 
 ## License
 

@@ -1,4 +1,4 @@
-# ADR-0007: Admin frontend in modern Angular; HTTP client settled, UI library narrowed
+# ADR-0007: Admin frontend in modern Angular; orval for the API client, UI library narrowed
 
 - Status: accepted (UI library: narrowed to two, pending a spike)
 
@@ -13,42 +13,73 @@ Modern Angular: standalone components, signals, new control flow, zoneless. As o
 Angular 22 the resource APIs (`resource`, `rxResource`, `httpResource`) are stable and
 zoneless is the default path, so both are load-bearing rather than aspirational.
 
-### HTTP client: a typed wrapper over `HttpClient`
+### HTTP client: orval, generating against `openapi.json`
 
-Types keep coming from the contract — `openapi-typescript` generates `schema.d.ts`
-from `openapi.json` (ADR-0006) and that does not change. What is decided here is the
-*runtime*: **Angular's `HttpClient`, behind a small generic wrapper** that navigates
-the generated `paths` type, so a route literal types its own response:
+The contract stays the source (ADR-0006): the admin generates its client from
+`openapi.json`, the same artifact any external consumer gets. What is decided here is
+*how*: **orval** (MIT, v8.26.0, ~1.9M weekly downloads, 74 contributors over the last
+quarter), configured in `apps/admin/orval.config.ts`, emitting into
+`src/app/core/api/` and committed like the spec itself.
 
-```ts
-type GetPath = { [P in keyof paths]: paths[P] extends { get: object } ? P : never }[keyof paths];
-type JsonOk<Op> = Op extends { responses: { 200: { content: { 'application/json': infer B } } } } ? B : never;
+The shape wanted is `override.angular.retrievalClient: 'both'`: **`httpResource`
+helpers for reads** (signal-first, which is the Angular 22 data path) and **injectable
+`HttpClient` services for writes**. Both sit on `HttpClient`, so **interceptors keep
+being where the auth token, retries and the offline cart queue (ADR-0012) live** — the
+requirement that drove this decision in the first place.
 
-get<P extends GetPath>(path: P) {
-  return this.#http.get<JsonOk<paths[P]['get']>>(`/api${path}`);
-}
-```
+**What ships configured is `'httpClient'`**, for the reason below. Reads go through
+`rxResource` over the generated services meanwhile: returning Observables is not an
+argument against generated clients — `rxResource` bridges them to signals and is stable
+in v22 — and flipping to `'both'` is a one-line config change plus a regeneration.
 
-Path params, query strings and request bodies take it to roughly 80 lines; the shape
-is the same conditional-type navigation.
+Orval replaces `openapi-typescript` in the admin: it generates its own models rather
+than a `paths` type. The principle of ADR-0006 is untouched, only the generator
+changes.
 
-`HttpClient` rather than `openapi-fetch` because **interceptors** are where the auth
-token, retries and — decisively — the offline cart queue (ADR-0012) belong, and a
-`fetch`-based client would mean rebuilding all of it. `provideHttpClientTesting` comes
-along for free.
+`@orval/mock` (MSW) and `@orval/zod` come with the meta package. Mocks are worth using
+for admin tests without a live API; runtime response validation via zod is available
+and not adopted — the API already validates, and paying that cost twice needs a reason.
 
-**Alternative kept on file: `ng-openapi-gen`** (MIT, ~158k weekly downloads, v1.0.5).
-It generates injectable Angular services with typed methods, so there is no glue to
-write at all, and since it also builds on `HttpClient` the interceptor story is
-identical. It loses here on three counts: it *replaces* `openapi-typescript` in the
-admin rather than complementing it (so it moves what ADR-0006 settled), it commits a
-large volume of generated code, and it had no release between November 2025 and this
-decision while Angular ships two majors a year. What would flip it: many multipart
-uploads, complex query serialisation, or an endpoint count where hand-maintained
-conditional types stop being cheaper than regenerating. Reversible either way.
+**Risk, stated precisely:** orval's lineage is React (react-query is its flagship) and
+the Angular target — `httpResource` support especially — is younger. `@orval/angular`'s
+~1.9M weekly downloads are within a rounding error of orval's own, which is the proof
+that the meta package pulls it for everyone: that number is *not* evidence of the
+Angular target being widely exercised. Mitigation is inherent to generators: the
+emitted code is ours, so disappointing output means switching tools, not being
+stranded. The hand-written typed wrapper over `HttpClient` — roughly 80 lines of
+conditional-type navigation over an `openapi-typescript` `paths` type, and the prior
+decision here — stays the escape hatch.
 
-Note for the record: returning Observables is *not* an argument against generated
-clients — `rxResource` bridges them to signals and is stable in v22.
+**The smoke test was run here instead of deferred, and it caught that risk on first
+contact:** with `retrievalClient: 'both'`, the emitted `*.resource.ts` does not compile
+under `exactOptionalPropertyTypes` — TS2375, the request-extension helper added in
+orval-labs/orval#3710 assigns a possibly-undefined `headers` into `HttpResourceRequest`.
+The `httpClient` half compiles clean, so the config ships as `'httpClient'`; the
+alternative was dropping `exactOptionalPropertyTypes` for every line of admin code to
+accommodate one generated helper. Reported as orval-labs/orval#3909 and **fixed
+upstream in #3911** — the suggested three-line change, plus a regression guard that
+typechecks the generated samples under `exactOptionalPropertyTypes`, so it stays fixed.
+It is unreleased as of v8.26.0: the flip to `'both'` is a one-line config change on the
+release that carries it.
+
+**Still deferred to block 1**, with the first real endpoint: that interceptors compose
+as expected over the generated services. Same posture as the UI library spike below —
+decided on paper, confirmed on contact.
+
+**`tagsSplitDeduplication` is parked, with the measurement that says it can wait.** The
+option promises to hoist each tag file's shared plumbing into a `common-types.ts`; with
+`client: 'angular'` it hoists nothing, because `@orval/angular` never declares
+`sharedTypes` (`fetch`, `query`, `swr` and `mcp` do), so all it emits is a root barrel —
+and one that reexports the services but not the resources. Under `'both'` that leaves
+111 of every `*.resource.ts`'s 150 lines duplicated per tag. It is not a bundle problem:
+ten copies of that block in one chunk cost 587 B gzipped against 507 B for one, because
+DEFLATE references the repeats; only copies landing in separate lazy chunks pay in full,
+about 0.5 kB gzipped each. What it does cost is ~111 committed lines per tag regenerated
+into every contract diff, and duplication is where generator drift hides — #3813 was
+exactly a drifted copy of core's import rule in the resource files. Worth raising
+upstream as a documentation-or-behaviour mismatch (either wire angular in or document
+the limitation), but once `'both'` is live and there are several tags to measure in a
+real app rather than in a lab.
 
 ### UI library: Taiga UI leading, ng-zorro-antd the alternative
 
@@ -97,11 +128,17 @@ access to sanctions before, and that is a continuity question.
 - **PrimeNG**: disqualified June 2026 — v22+ moved to a commercial license (PrimeUI),
   community edition gated by company size/revenue; existing MIT versions frozen.
   Unacceptable dependency for an AGPL open-source product.
-- **`openapi-fetch`**: see above — no interceptors, so auth, retries and the offline
-  queue would all be rebuilt.
+- **`openapi-fetch`**: no interceptors, so auth, retries and the offline queue would
+  all be rebuilt on a `fetch` client.
+- **A hand-written typed wrapper over `HttpClient`**: the previous decision here, and
+  still the fallback. It loses to orval on nothing except dependency count, and the
+  `httpResource` half it would hand-roll is generated instead — once orval emits it
+  under `exactOptionalPropertyTypes`.
+- **`ng-openapi-gen`**: the closest competitor (MIT, ~158k weekly downloads, v1.0.5),
+  but no release between November 2025 and this decision while Angular ships two
+  majors a year, effectively one maintainer, and no `httpResource` generation.
 - **`openapi-fetch-angular`**: exactly the right idea, effectively dead (last publish
   March 2024, single digit weekly downloads).
-- **`ng-openapi`**: active but pre-1.0, single maintainer, and ~3k weekly downloads
-  against `ng-openapi-gen`'s ~158k.
+- **`ng-openapi`**: active but pre-1.0, single maintainer, and ~3k weekly downloads.
 - The future public shop is NOT bound to Angular (SEO/SSR may favor other frameworks);
   decision deferred, separate repo.
