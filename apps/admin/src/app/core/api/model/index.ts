@@ -6,6 +6,8 @@
  * OpenAPI spec version: 0.0.0
  */
 
-export * from './getHealth200';
-export * from './getHealth200Status';
+export * from './getLivez200';
+export * from './getLivez200Status';
 export * from './getMe200';
+export * from './getReadyz200';
+export * from './getReadyz200Status';

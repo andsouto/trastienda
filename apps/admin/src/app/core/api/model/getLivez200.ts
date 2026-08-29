@@ -5,10 +5,8 @@
  * Inventory and sales management for small retail.
  * OpenAPI spec version: 0.0.0
  */
+import type { GetLivez200Status } from './getLivez200Status';
 
-export type GetHealth200Status = typeof GetHealth200Status[keyof typeof GetHealth200Status];
-
-
-export const GetHealth200Status = {
-  ok: 'ok',
-} as const;
+export type GetLivez200 = {
+  status: GetLivez200Status;
+};
