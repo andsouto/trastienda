@@ -23,6 +23,8 @@ export async function buildApp(options: AppOptions) {
     logger: options.logger ?? false,
   }).withTypeProvider<TypeBoxTypeProvider>();
 
+  app.decorateRequest('auth', null);
+
   app.register(swagger, {
     openapi: {
       openapi: '3.1.0',
@@ -39,13 +41,9 @@ export async function buildApp(options: AppOptions) {
     },
   });
 
-  app.decorateRequest('auth', null);
-
   // Outside the protected scope below, so it needs no token.
   app.register(healthPlugin);
 
-  // Not awaited on purpose: awaiting `register` closes the encapsulation
-  // context, and the hook stops covering what is registered after it.
   app.register((scope, _options, done) => {
     protectScope(scope, options.verifyToken);
     scope.register(identityPlugin);
