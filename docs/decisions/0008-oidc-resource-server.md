@@ -18,6 +18,17 @@ able to bring their own identity provider.
   (~200-400MB, Go, uses Postgres). Automated tests use a fake JWKS signing test
   tokens — no IdP container needed.
 
+## Library: jose
+
+`jose` (MIT, zero dependencies) verifies the tokens; `createRemoteJWKSet` handles the
+key fetching, caching and rotation. Zero dependencies matters for a product that pins
+every version and reviews every bump (ADR-0009), and being Web Crypto based it runs in
+a browser too — which the offline till of ADR-0014 needs for chain hashing.
+
+`@fastify/jwt` + `get-jwks` is the obvious counter-proposal and was rejected: it sells
+`request.jwtVerify()` sugar over a hook we own anyway, and couples verification to
+Fastify, so the verifier stops being a plain function testable without a web framework.
+
 ## Alternatives considered (for the maintainer's own deployment)
 
 - Keycloak: most featureful, 1-2GB+ JVM — too heavy for cheap servers.
