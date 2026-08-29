@@ -4,10 +4,10 @@ import { buildApp } from './app.ts';
 
 const rejectEveryToken = () => Promise.reject(new Error('no token is valid here'));
 
-it('GET /health responds ok without a token', async () => {
+it.each(['/livez', '/readyz'])('GET %s responds ok without a token', async (url) => {
   const app = await buildApp({ verifyToken: rejectEveryToken });
 
-  const response = await app.inject({ method: 'GET', url: '/health' });
+  const response = await app.inject({ method: 'GET', url });
 
   expect(response.statusCode).toBe(200);
   expect(response.json()).toEqual({ status: 'ok' });
