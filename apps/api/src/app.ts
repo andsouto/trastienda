@@ -41,7 +41,6 @@ export async function buildApp(options: AppOptions) {
     },
   });
 
-  // Outside the protected scope below, so it needs no token.
   app.register(healthPlugin);
 
   app.register((scope, _options, done) => {
