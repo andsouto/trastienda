@@ -1,35 +1,26 @@
 import { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fastify';
-import {
-  createRemoteJWKSet,
-  type JWTPayload,
-  jwtVerify,
-  type JWTVerifyGetKey,
-} from 'jose';
+import { createRemoteJWKSet, jwtVerify, type JWTVerifyGetKey } from 'jose';
 
-/**
- * Everything the rest of the application is allowed to know about the caller.
- * The raw JWT payload never travels further than this: the token is an
- * infrastructure detail, the same way Prisma rows are (ADR-0005).
- */
 export interface AuthenticatedUser {
   /**
-  OIDC subject — the actor every recorded fact points at (ADR-0012).
+  The token's `sub` claim.
   */
   subject: string;
-  claims: JWTPayload;
 }
 
 export type VerifyToken = (token: string) => Promise<AuthenticatedUser>;
 
 /**
- * Asymmetric signatures only. Accepting an HMAC algorithm would let anyone who
- * can read the issuer's public JWKS mint tokens we would then trust — the
- * classic algorithm-confusion attack.
+ * Every asymmetric algorithm jose supports, and no symmetric one. Resolving keys
+ * from a JWKS already makes jose refuse HMAC — a JWKS cannot yield a symmetric
+ * key — so this is a second lock on the algorithm-confusion door rather than the
+ * only one, and it also pins the set an issuer may sign with.
  */
 const SIGNING_ALGORITHMS = [
   'RS256', 'RS384', 'RS512',
   'PS256', 'PS384', 'PS512',
   'ES256', 'ES384', 'ES512',
+  'EdDSA', 'Ed25519',
 ];
 
 const BEARER_PREFIX = 'Bearer ';
@@ -50,7 +41,7 @@ async function verify(
     throw new TypeError('token carries no subject');
   }
 
-  return { claims: payload, subject: payload.sub };
+  return { subject: payload.sub };
 }
 
 export interface TokenVerifierOptions {
