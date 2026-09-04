@@ -3,10 +3,13 @@ import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { fastify, type FastifyServerOptions } from 'fastify';
 
 import packageJson from '../package.json' with { type: 'json' };
+import { protectScope, type VerifyToken } from './plugins/auth.ts';
 import { healthPlugin } from './plugins/health.ts';
+import { identityPlugin } from './plugins/identity.ts';
 
 export interface AppOptions {
   logger?: FastifyServerOptions['logger'];
+  verifyToken: VerifyToken;
 }
 
 /**
@@ -15,12 +18,14 @@ export interface AppOptions {
  * Dependencies (repositories, UnitOfWork, ...) will be passed in here by the
  * composition root in `main.ts` as domain modules appear.
  */
-export async function buildApp(options: AppOptions = {}) {
+export async function buildApp(options: AppOptions) {
   const app = fastify({
     logger: options.logger ?? false,
   }).withTypeProvider<TypeBoxTypeProvider>();
 
-  await app.register(swagger, {
+  app.decorateRequest('auth', null);
+
+  app.register(swagger, {
     openapi: {
       openapi: '3.1.0',
       info: {
@@ -28,10 +33,23 @@ export async function buildApp(options: AppOptions = {}) {
         description: 'Inventory and sales management for small retail.',
         version: packageJson.version,
       },
+      components: {
+        securitySchemes: {
+          bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        },
+      },
     },
   });
 
-  await app.register(healthPlugin);
+  app.register(healthPlugin);
+
+  app.register((scope, _options, done) => {
+    protectScope(scope, options.verifyToken);
+    scope.register(identityPlugin);
+    done();
+  });
+
+  await app.ready();
 
   return app;
 }
