@@ -3,7 +3,9 @@ import { fileURLToPath } from 'node:url';
 
 import { buildApp } from '../src/app.ts';
 
-const app = await buildApp();
+const app = await buildApp({
+  verifyToken: () => Promise.reject(new Error('the OpenAPI generator serves no requests')),
+});
 await app.ready();
 
 const target = fileURLToPath(new URL('../openapi.json', import.meta.url));

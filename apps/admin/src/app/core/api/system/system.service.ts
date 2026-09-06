@@ -26,7 +26,9 @@ import {
 } from 'rxjs';
 
 import type {
-  GetHealth200
+  GetLivez200,
+  GetMe200,
+  GetReadyz200
 } from '../model';
 
 
@@ -80,14 +82,14 @@ export class SystemService {
 /**
  * @summary Liveness probe
  */
- getHealth<TData = GetHealth200>( options?: HttpClientBodyOptions): Observable<TData>;
- getHealth<TData = GetHealth200>( options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
- getHealth<TData = GetHealth200>( options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
-  getHealth<TData = GetHealth200>(
+ getLivez<TData = GetLivez200>( options?: HttpClientBodyOptions): Observable<TData>;
+ getLivez<TData = GetLivez200>( options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ getLivez<TData = GetLivez200>( options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  getLivez<TData = GetLivez200>(
      options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
       return this.http.get<TData>(
-      `/health`,{
+      `/livez`,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events',
       }
@@ -96,7 +98,7 @@ export class SystemService {
 
     if (options?.observe === 'response') {
       return this.http.get<TData>(
-      `/health`,{
+      `/livez`,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response',
       }
@@ -104,7 +106,73 @@ export class SystemService {
     }
 
     return this.http.get<TData>(
-      `/health`,{
+      `/livez`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * @summary Readiness probe
+ */
+ getReadyz<TData = GetReadyz200>( options?: HttpClientBodyOptions): Observable<TData>;
+ getReadyz<TData = GetReadyz200>( options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ getReadyz<TData = GetReadyz200>( options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  getReadyz<TData = GetReadyz200>(
+     options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/readyz`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/readyz`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.get<TData>(
+      `/readyz`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * @summary The authenticated caller
+ */
+ getMe<TData = GetMe200>( options?: HttpClientBodyOptions): Observable<TData>;
+ getMe<TData = GetMe200>( options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ getMe<TData = GetMe200>( options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  getMe<TData = GetMe200>(
+     options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/me`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/me`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.get<TData>(
+      `/me`,{
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'body',
       }
@@ -112,4 +180,6 @@ export class SystemService {
   }
 };
 
-export type GetHealthClientResult = NonNullable<GetHealth200>
+export type GetLivezClientResult = NonNullable<GetLivez200>
+export type GetReadyzClientResult = NonNullable<GetReadyz200>
+export type GetMeClientResult = NonNullable<GetMe200>

@@ -111,6 +111,9 @@ importers:
       fastify:
         specifier: 5.12.1
         version: 5.12.1
+      jose:
+        specifier: 6.2.9
+        version: 6.2.9
     devDependencies:
       '@testcontainers/postgresql':
         specifier: 12.1.0
