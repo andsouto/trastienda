@@ -165,10 +165,8 @@ export function protectScope(scope: FastifyInstance, verifyToken: VerifyToken): 
 
     try {
       request.auth = await verifyToken(header.slice(BEARER_PREFIX.length));
-    } catch {
-      // The reason stays in the logs, not in the response: telling a caller
-      // which check failed helps nobody but an attacker.
-      request.log.debug('token rejected');
+    } catch (error) {
+      request.log.debug({ err: error }, 'token rejected');
 
       return unauthorized(reply, 'Bearer error="invalid_token"', 'invalid token');
     }
