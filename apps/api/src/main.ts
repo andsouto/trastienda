@@ -1,13 +1,13 @@
 // Composition root: the only place that knows every concrete implementation.
 import { buildApp } from './app.ts';
 import { loadEnvironment } from './config/environment.ts';
-import { createRemoteTokenVerifier } from './plugins/auth.ts';
+import { createTokenVerifier } from './plugins/oidc.ts';
 
 const environment = loadEnvironment();
 
 const app = await buildApp({
   logger: { level: environment.LOG_LEVEL },
-  verifyToken: createRemoteTokenVerifier({
+  verifyToken: createTokenVerifier({
     audience: environment.OIDC_AUDIENCE,
     issuer: environment.OIDC_ISSUER_URL,
   }),
