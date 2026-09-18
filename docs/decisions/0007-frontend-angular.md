@@ -21,16 +21,11 @@ The contract stays the source (ADR-0006): the admin generates its client from
 quarter), configured in `apps/admin/orval.config.ts`, emitting into
 `src/app/core/api/` and committed like the spec itself.
 
-The shape wanted is `override.angular.retrievalClient: 'both'`: **`httpResource`
+The shape is `override.angular.retrievalClient: 'both'`: **`httpResource`
 helpers for reads** (signal-first, which is the Angular 22 data path) and **injectable
 `HttpClient` services for writes**. Both sit on `HttpClient`, so **interceptors keep
 being where the auth token, retries and the offline cart queue (ADR-0012) live** — the
 requirement that drove this decision in the first place.
-
-**What ships configured is `'httpClient'`**, for the reason below. Reads go through
-`rxResource` over the generated services meanwhile: returning Observables is not an
-argument against generated clients — `rxResource` bridges them to signals and is stable
-in v22 — and flipping to `'both'` is a one-line config change plus a regeneration.
 
 Orval replaces `openapi-typescript` in the admin: it generates its own models rather
 than a `paths` type. The principle of ADR-0006 is untouched, only the generator
@@ -51,16 +46,10 @@ conditional-type navigation over an `openapi-typescript` `paths` type, and the p
 decision here — stays the escape hatch.
 
 **The smoke test was run here instead of deferred, and it caught that risk on first
-contact:** with `retrievalClient: 'both'`, the emitted `*.resource.ts` does not compile
-under `exactOptionalPropertyTypes` — TS2375, the request-extension helper added in
-orval-labs/orval#3710 assigns a possibly-undefined `headers` into `HttpResourceRequest`.
-The `httpClient` half compiles clean, so the config ships as `'httpClient'`; the
-alternative was dropping `exactOptionalPropertyTypes` for every line of admin code to
-accommodate one generated helper. Reported as orval-labs/orval#3909 and **fixed
-upstream in #3911** — the suggested three-line change, plus a regression guard that
-typechecks the generated samples under `exactOptionalPropertyTypes`, so it stays fixed.
-It is unreleased as of v8.26.0: the flip to `'both'` is a one-line config change on the
-release that carries it.
+contact:** the emitted `*.resource.ts` did not compile under
+`exactOptionalPropertyTypes` (orval-labs/orval#3909). Fixed upstream in #3911, with a
+regression guard that typechecks the generated samples under the flag — so the risk
+is real, and covered where it should be.
 
 **Still deferred to block 1**, with the first real endpoint: that interceptors compose
 as expected over the generated services. Same posture as the UI library spike below —
@@ -69,17 +58,17 @@ decided on paper, confirmed on contact.
 **`tagsSplitDeduplication` is parked, with the measurement that says it can wait.** The
 option promises to hoist each tag file's shared plumbing into a `common-types.ts`; with
 `client: 'angular'` it hoists nothing, because `@orval/angular` never declares
-`sharedTypes` (`fetch`, `query`, `swr` and `mcp` do), so all it emits is a root barrel —
-and one that reexports the services but not the resources. Under `'both'` that leaves
-111 of every `*.resource.ts`'s 150 lines duplicated per tag. It is not a bundle problem:
-ten copies of that block in one chunk cost 587 B gzipped against 507 B for one, because
-DEFLATE references the repeats; only copies landing in separate lazy chunks pay in full,
-about 0.5 kB gzipped each. What it does cost is ~111 committed lines per tag regenerated
+`sharedTypes` (`fetch`, `query`, `swr` and `mcp` do), so it adds nothing — the root
+barrel comes regardless. That leaves ~140 of every `*.resource.ts`'s 171 lines
+duplicated per tag. It is not a bundle problem: ten copies of that block in one chunk
+cost 587 B gzipped against 507 B for one, because DEFLATE references the repeats; only
+copies landing in separate lazy chunks pay in full, about 0.5 kB gzipped each. What it
+does cost is ~140 committed lines per tag regenerated
 into every contract diff, and duplication is where generator drift hides — #3813 was
 exactly a drifted copy of core's import rule in the resource files. Worth raising
 upstream as a documentation-or-behaviour mismatch (either wire angular in or document
-the limitation), but once `'both'` is live and there are several tags to measure in a
-real app rather than in a lab.
+the limitation), but once there are several tags to measure in a real app rather than
+in a lab.
 
 ### UI library: Taiga UI leading, ng-zorro-antd the alternative
 
@@ -132,8 +121,7 @@ access to sanctions before, and that is a continuity question.
   all be rebuilt on a `fetch` client.
 - **A hand-written typed wrapper over `HttpClient`**: the previous decision here, and
   still the fallback. It loses to orval on nothing except dependency count, and the
-  `httpResource` half it would hand-roll is generated instead — once orval emits it
-  under `exactOptionalPropertyTypes`.
+  `httpResource` half it would hand-roll is generated instead.
 - **`ng-openapi-gen`**: the closest competitor (MIT, ~158k weekly downloads, v1.0.5),
   but no release between November 2025 and this decision while Angular ships two
   majors a year, effectively one maintainer, and no `httpResource` generation.
