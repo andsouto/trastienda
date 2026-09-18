@@ -65,6 +65,8 @@ living documents: update in place, git is the history.
   workflow has to repeat it (setup-node cannot read `mise.toml` yet), so Renovate moves
   both pins in one PR and CI fails if they drift apart. `packageManager` in package.json
   is the authoritative pnpm pin (no corepack — pnpm self-switches to it).
+- **Dependency build scripts are off** (`allowBuilds` all `false`, `strictDepBuilds`); the
+  comment in `pnpm-workspace.yaml` says how to classify a new one.
 - **TypeScript 6.0.x everywhere**: required by Angular 22 (`>=6.0 <6.1`) and the
   ceiling of typescript-eslint (`<6.1`). Move to TS 7 when typescript-eslint allows.
 - **ESLint owns TS/JS, config per app** (`apps/api/eslint.config.js`,

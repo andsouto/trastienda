@@ -1,13 +1,18 @@
 packages:
   - apps/*
 
+# All off. A new one lands here as a placeholder when the install fails: `false` when the
+# package works without its script (prebuilt optionalDependency, lazy download, version
+# check), `true` only with the reason on the same line. ADR-0009.
 allowBuilds:
-  '@parcel/watcher': true
-  '@prisma/engines': true
+  '@parcel/watcher': false
+  '@prisma/engines': false
   cpu-features: false
-  esbuild: true
-  lmdb: true
-  msgpackr-extract: true
-  prisma: true
+  esbuild: false
+  lmdb: false
+  msgpackr-extract: false
+  prisma: false
   protobufjs: false
   ssh2: false
+
+strictDepBuilds: true

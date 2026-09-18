@@ -61,6 +61,12 @@ repos.
   nothing downstream has to resolve our ranges, so the reason to keep them disappears.
   A lockfile pins the tree but hides direct-dependency drift from the diff; pinning puts
   every version change in a reviewable PR. `engines` stays a range.
+- **Dependency build scripts are off**: `allowBuilds` in `pnpm-workspace.yaml` lists every
+  dependency that ships one, all `false`, and `strictDepBuilds` fails the install when a
+  bump brings a new one, so it goes red instead of automerging and someone classifies it —
+  `true` only with the reason on its line. A script runs as the developer on every
+  install, before anything imports the package. Workflows declare read-only `permissions`
+  (the repo default is read as well): `verify` executes every dependency's code.
 - **Release artifacts, all living in this repo** (packaging is part of the product):
   multi-arch Docker images to GHCR, a docker-compose quickstart, a reference Kustomize
   base in `deploy/`, and a **Timoni module** published as an OCI artifact to GHCR.
