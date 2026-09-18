@@ -9,9 +9,8 @@ export default defineConfig({
       client: 'angular',
       mode: 'tags-split',
       override: {
-        // ADR-0007 wants 'both'; its httpResource half does not compile under
-        // exactOptionalPropertyTypes (orval-labs/orval#3909)
-        angular: { retrievalClient: 'httpClient' },
+        // httpResource helpers for reads, injectable services for writes (ADR-0007)
+        angular: { retrievalClient: 'both' },
       },
       schemas: 'src/app/core/api/model',
       // a directory, not a file: in tags-split every file is named after its tag

@@ -34,10 +34,10 @@ living documents: update in place, git is the history.
   intended data-fetching path. The API client is generated from `openapi.json` with
   **orval** into `apps/admin/src/app/core/api/` (`apps/admin/orval.config.ts`);
   interceptors are where auth, retries and the offline cart queue live (ADR-0007).
-  `retrievalClient` is `'httpClient'` — injectable services, reads wrapped in
-  `rxResource` — because orval's `httpResource` output did not compile under
-  `exactOptionalPropertyTypes`; fixed upstream in orval-labs/orval#3911 and unreleased
-  as of v8.26.0, so `'both'` lands as a one-line change on the release that carries it.
+  `retrievalClient` is `'both'`: `httpResource` helpers (`*.resource.ts`) for reads,
+  injectable services for writes. Renovate's orval bumps go red on the codegen-drift
+  check whenever the emitted output changes (it cannot run `pnpm codegen`): bump by
+  hand and commit the regenerated client.
   UI library narrowed to Taiga UI (leading) vs ng-zorro-antd, decided by a spike once
   there are real screens.
 - **Auth**: the API is a provider-agnostic OIDC resource server; Zitadel is the
@@ -151,8 +151,8 @@ Designed in full in ADR-0012 (aggregates), ADR-0013 (consistency) and ADR-0014
   deployed and modified by third parties (ADR-0014); needs advice, not a guess.
 - A formal trademark scan for "trastienda" before publishing artifacts (ADR-0011).
 - Whether to push orval upstream on `tagsSplitDeduplication`, which does nothing for the
-  Angular client — measured and parked in ADR-0007, to revisit once the client runs
-  `retrievalClient: 'both'` with several tags.
+  Angular client — measured and parked in ADR-0007, to revisit once the client has
+  several tags.
 
 ## Next steps
 
