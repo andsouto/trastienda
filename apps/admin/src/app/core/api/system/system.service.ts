@@ -6,9 +6,7 @@
  * OpenAPI spec version: 0.0.0
  */
 import {
-  HttpClient,
-  HttpHeaders,
-  HttpResponse as AngularHttpResponse
+  HttpClient
 } from '@angular/common/http';
 import type {
   HttpContext,
@@ -21,7 +19,7 @@ import {
   inject
 } from '@angular/core';
 
-import {
+import type {
   Observable
 } from 'rxjs';
 
@@ -30,6 +28,11 @@ import type {
   GetMe200,
   GetReadyz200
 } from '../model';
+
+import type {
+  HttpHeaders,
+  HttpResponse as AngularHttpResponse
+} from '@angular/common/http';
 
 
 
