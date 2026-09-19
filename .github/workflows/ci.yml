@@ -5,6 +5,11 @@ on:
   push:
     branches: [main]
 
+# verify runs every dependency's code (install, build, test); the token it can reach
+# should not be able to push, release or approve anything
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
