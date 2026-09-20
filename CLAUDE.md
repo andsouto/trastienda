@@ -61,10 +61,11 @@ living documents: update in place, git is the history.
 
 ## Tooling
 
-- **mise** pins node + pnpm (`mise.toml`) and is the source for the node version; the
-  workflow has to repeat it (setup-node cannot read `mise.toml` yet), so Renovate moves
-  both pins in one PR and CI fails if they drift apart. `packageManager` in package.json
-  is the authoritative pnpm pin (no corepack — pnpm self-switches to it).
+- **mise** pins node + pnpm + process-compose (`mise.toml`) and is the source for the
+  node version; the workflow has to repeat it (setup-node cannot read `mise.toml` yet),
+  so Renovate moves both pins in one PR and CI fails if they drift apart.
+  `packageManager` in package.json is the authoritative pnpm pin (no corepack — pnpm
+  self-switches to it).
 - **Dependency build scripts are off** (`allowBuilds` all `false`, `strictDepBuilds`); the
   comment in `pnpm-workspace.yaml` says how to classify a new one.
 - **TypeScript 6.0.x everywhere**: required by Angular 22 (`>=6.0 <6.1`) and the
@@ -91,9 +92,15 @@ living documents: update in place, git is the history.
   `pnpm test`, `pnpm build` — all from root.
 - `pnpm codegen` — regenerate `openapi.json` + the admin's orval client (run after any
   route/schema change and commit the result).
-- `docker compose up -d` — Postgres 18 (:5432), MinIO (:9000/:9001), Zitadel (:8080,
-  first login `zitadel-admin@zitadel.localhost` / `Password1!`). Needs `.env`
-  (`cp .env.example .env`).
+- `process-compose up` — the whole local stack in one TUI: `docker compose up -d --wait`
+  (Postgres 18 :5432, MinIO :9000/:9001, Zitadel :8080, first login
+  `zitadel-admin@zitadel.localhost` / `Password1!`), then api (:3000, inspector on
+  :9229 for the `.vscode/` attach config) and admin (:4200). Each process is a pnpm
+  script, so `docker compose up -d` + `pnpm --filter @trastienda/<app> dev` still work
+  on their own. Needs `.env` (`cp .env.example .env`). process-compose's own settings
+  live in `.pc_env` (control API off :8080, no `.env` injection into processes — each
+  one loads its own config), and the Docker file is named `docker-compose.yaml`
+  because process-compose claims `compose.yaml` as its own default.
 - API integration tests use Testcontainers (needs Docker, no compose required).
 
 ## Conventions

@@ -50,7 +50,7 @@ repos.
   `fix(deps)` reaches nobody until that decision is taken. Two exceptions wait for a
   human: **majors**, which are decisions rather than chores, and **Zitadel minors**,
   because nothing in CI boots it and it migrates its schema on start, so a bad bump fails
-  silently and is not undone by reverting `compose.yaml` — it is checked by hand against
+  silently and is not undone by reverting `docker-compose.yaml` — it is checked by hand against
   the local stack instead. Automerge runs through GitHub's native auto-merge, which lands
   the PR the moment checks pass; the merge method is auto-detected from repo settings, and
   since the repo only allows rebase, linear history holds. No schedule window: PRs arrive
