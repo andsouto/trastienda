@@ -3,7 +3,6 @@
  * Do not edit manually.
  * trastienda API
  * Inventory and sales management for small retail.
- * OpenAPI spec version: 0.0.0
  */
 
 export type GetReadyz200Status = typeof GetReadyz200Status[keyof typeof GetReadyz200Status];
