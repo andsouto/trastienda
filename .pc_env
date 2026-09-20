@@ -1,0 +1,10 @@
+# process-compose settings for this project (read from the working directory).
+
+# Its control API defaults to :8080, which Zitadel takes in docker compose.
+PC_PORT_NUM=8081
+
+# Never inject the root .env into processes: each one owns its configuration —
+# docker compose reads .env itself, the api loads it with --env-file-if-exists,
+# and admin must not see it at all (Angular CLI honours PORT, so it would bind
+# the api's port).
+PC_DISABLE_DOTENV=1

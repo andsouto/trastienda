@@ -13,18 +13,27 @@ Open-source inventory and sales management for small retail.
 
 ## Development
 
-Requirements: [mise](https://mise.jdx.dev) (or Node 24 + pnpm 11 by other means) and
-Docker.
+Requirements: [mise](https://mise.jdx.dev) and Docker. mise pins node, pnpm and
+[process-compose](https://f1bonacc1.github.io/process-compose/).
 
 ```sh
-mise install            # node + pnpm
+mise install
 pnpm install
 cp .env.example .env
-docker compose up -d    # Postgres 18, MinIO, Zitadel (http://localhost:8080)
-
-pnpm --filter @trastienda/api dev      # API on http://localhost:3000
-pnpm --filter @trastienda/admin start  # admin on http://localhost:4200
+process-compose up      # everything, one TUI: Postgres 18, MinIO, Zitadel (:8080)
+                        # through docker compose, then api (:3000) and admin (:4200)
 ```
+
+Each process is one pnpm script, so they also run on their own:
+
+```sh
+docker compose up -d                  # infra only
+pnpm --filter @trastienda/api dev     # API on http://localhost:3000
+pnpm --filter @trastienda/admin dev   # admin on http://localhost:4200
+```
+
+The api process runs with the inspector on :9229; the "Attach to API" launch in
+`.vscode/` puts breakpoints on it and survives `--watch` restarts.
 
 Everyday commands, from the repo root:
 

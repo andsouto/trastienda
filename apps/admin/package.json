@@ -6,7 +6,7 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "dev": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "lint": "eslint .",

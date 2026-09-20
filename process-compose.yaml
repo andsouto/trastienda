@@ -1,0 +1,41 @@
+# Local development: `process-compose up`. Infra goes through compose; api and
+# admin run natively, each as its own pnpm script, so any of them can still be
+# run by hand. The api readiness probe is the same endpoint Kubernetes will use.
+# process-compose's own settings (control port, no .env injection) are in .pc_env.
+version: '0.5'
+
+processes:
+  infra:
+    # --wait counts any exited container as a failure, exit code 0 included
+    # (docker/compose#10596): no one-shot services in docker-compose.yaml.
+    command: docker compose up -d --wait
+
+  api:
+    command: pnpm --filter @trastienda/api dev
+    depends_on:
+      infra:
+        condition: process_completed_successfully
+    environment:
+      # Inspector on 127.0.0.1:9229, for the "Attach to API" launch in .vscode.
+      # Only the --watch child binds it; pnpm and the watcher parent do not.
+      - NODE_OPTIONS=--inspect
+    readiness_probe:
+      http_get:
+        host: localhost
+        port: 3000
+        path: /readyz
+      period_seconds: 2
+
+  admin:
+    # Needs nothing from compose: ng serve serves static files, the browser
+    # talks to the api and the IdP directly.
+    command: pnpm --filter @trastienda/admin dev
+    readiness_probe:
+      http_get:
+        host: localhost
+        port: 4200
+        path: /
+      period_seconds: 2
+      # A failed readiness probe restarts the process; a cold first build can
+      # take longer than the default 3 tries.
+      failure_threshold: 30
