@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@testcontainers/postgresql": "12.1.0",
-    "@types/node": "26.6.1",
+    "@types/node": "26.6.2",
     "dotenv": "18.0.0",
     "eslint": "10.11.0",
     "eslint-plugin-boundaries": "7.2.0",
