@@ -56,6 +56,9 @@ living documents: update in place, git is the history.
   minors (CI never boots it and it migrates its schema on start, so it is tried by hand).
   **All versions are pinned exactly** — these are apps, not libraries, so every version
   change shows up in a reviewable diff.
+  **CodeRabbit** reviews PRs from `.coderabbit.yaml` and is advisory: it comments, never
+  commits, approves or blocks, and skips Renovate. Below 10 stars it only reviews on
+  `@coderabbitai review`: ask once per PR, when the branch is green.
   Docker images/Kustomize/Timoni arrive when there is something to package.
 - **License**: AGPL-3.0 (ADR-0010). "trastienda" is the definitive name (ADR-0011).
 
