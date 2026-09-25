@@ -7,9 +7,9 @@ consumer of the same API (out of scope for now, separate private repo).
 
 **Status (2026-08-03):** monorepo scaffolded and verified (CI, compose, codegen chain);
 commit messages now linted per-commit in CI (rebase-only merges to `main`, ADR-0009);
-repo is public with the branch-protection ruleset live (PR required, `verify` +
-`commitlint` checks required and up to date, linear history, no force-push). **No
-domain code yet, but the domain model is designed** (ADR-0012/0013/0014) and the
+repo is public with the branch-protection ruleset live (PR required, `verify`,
+`commitlint` and `CodeQL` checks required and up to date, linear history, no force-push).
+**No domain code yet, but the domain model is designed** (ADR-0012/0013/0014) and the
 implementation order is in [docs/roadmap.md](docs/roadmap.md) — next up is block 1,
 foundations. Foundational decisions are ADRs in
 [docs/decisions/](docs/decisions/) — read them before proposing changes to stack or
@@ -56,6 +56,9 @@ living documents: update in place, git is the history.
   minors (CI never boots it and it migrates its schema on start, so it is tried by hand).
   **All versions are pinned exactly** — these are apps, not libraries, so every version
   change shows up in a reviewable diff.
+  **CodeQL** (`.github/workflows/codeql.yml`) is required: its `CodeQL` result fails the
+  PR on high or critical alerts, and its two `Analyze` jobs are required too, so the merge
+  waits for both languages. Copilot Autofix suggests fixes.
   **CodeRabbit** reviews PRs from `.coderabbit.yaml` and is advisory: it comments, never
   commits, approves or blocks, and skips Renovate. Below 10 stars it only reviews on
   `@coderabbitai review`: ask once per PR, when the branch is green.
