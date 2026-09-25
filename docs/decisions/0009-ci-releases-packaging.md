@@ -67,6 +67,14 @@ repos.
   `true` only with the reason on its line. A script runs as the developer on every
   install, before anything imports the package. Workflows declare read-only `permissions`
   (the repo default is read as well): `verify` executes every dependency's code.
+- **AI review is advisory.** Every tool on Code Review Bench, an open benchmark of real
+  PRs with human-curated findings, scores F1 45–65, so none of them gates a merge; the
+  constraint is free on a public repo, with nothing charged to a personal quota.
+  **CodeRabbit** reviews PRs from `.coderabbit.yaml`, whose comments carry the reason for
+  each setting. It only comments, never approves, requests changes, commits or opens PRs:
+  every commit lands verbatim on `main` and has to pass commitlint, and failures here are
+  fixed by regenerating. Chosen over Sourcery because it reads `CLAUDE.md` and keeps its
+  configuration in the repo.
 - **Release artifacts, all living in this repo** (packaging is part of the product):
   multi-arch Docker images to GHCR, a docker-compose quickstart, a reference Kustomize
   base in `deploy/`, and a **Timoni module** published as an OCI artifact to GHCR.
