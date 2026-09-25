@@ -1,0 +1,37 @@
+# Changelog
+
+## 0.1.0 (2026-09-25)
+
+
+### Features
+
+* **admin:** generate httpResource helpers for reads ([396f79e](https://github.com/andsouto/trastienda/commit/396f79e9e391123706a77602628c2c12da49ea26))
+* **api:** split the health probe into livez and readyz ([e8c1511](https://github.com/andsouto/trastienda/commit/e8c1511f6ae665df5594185cd03221aca7d756f2))
+* **api:** validate bearer tokens against the issuer's JWKS ([b9f2d6e](https://github.com/andsouto/trastienda/commit/b9f2d6e7fb27f9ec63db3c269fd07b3aff138189))
+* scaffold pnpm monorepo (api + admin), tooling, compose and CI ([ce349a7](https://github.com/andsouto/trastienda/commit/ce349a7c741e6300b368b2504ed5ae9f33b6e01a))
+
+
+### Bug Fixes
+
+* **api:** derive OpenAPI info.version from package.json ([91c5b95](https://github.com/andsouto/trastienda/commit/91c5b956e2f4fa1860606a18f18f708943cdd640))
+* **deps:** pin dependencies ([8bacebf](https://github.com/andsouto/trastienda/commit/8bacebfd6b2567acd3041e4bf156e09ab046a1f8))
+* **deps:** pin dependencies ([3098678](https://github.com/andsouto/trastienda/commit/30986781bc6d72d8a86478a0a63ae4e23380253f))
+* **deps:** update angular ([63bc760](https://github.com/andsouto/trastienda/commit/63bc760a8e3f905a689b9b5abe2a83f8e28dc877))
+* **deps:** update angular ([28c1f9e](https://github.com/andsouto/trastienda/commit/28c1f9ecdd480a6b716f0318d7a48d11d159a5f6))
+* **deps:** update angular ([03422a4](https://github.com/andsouto/trastienda/commit/03422a461e4539d5efd8c15705f2c34d077b47af))
+* **deps:** update angular to v22.1.4 ([06dc207](https://github.com/andsouto/trastienda/commit/06dc20733d7c31bf1a42e5541481875072caeaba))
+* **deps:** update angular to v22.1.5 ([f21b928](https://github.com/andsouto/trastienda/commit/f21b92897298ea984956442ef99a01110661faa1))
+* **deps:** update angular to v22.1.6 ([177e6fd](https://github.com/andsouto/trastienda/commit/177e6fd688f948197ea59caceb4e102b69d7d725))
+* **deps:** update angular to v22.1.7 ([1a755a2](https://github.com/andsouto/trastienda/commit/1a755a2f6c1822108810df3f975d2d40cda66fb4))
+* **deps:** update dependency @fastify/swagger to v9.8.1 ([266fafb](https://github.com/andsouto/trastienda/commit/266fafb2e7f6efa645b5f2502df57167858339ca))
+* **deps:** update dependency @fastify/swagger to v9.9.0 ([99faaf7](https://github.com/andsouto/trastienda/commit/99faaf70d7b7ba03608f7e80cf9a1065cac171e2))
+* **deps:** update dependency @sinclair/typebox to v0.34.52 ([88f5bf9](https://github.com/andsouto/trastienda/commit/88f5bf98a15292cf35bde564fbefca95cd22744e))
+* **deps:** update dependency fastify to v5.12.0 ([6f9d18c](https://github.com/andsouto/trastienda/commit/6f9d18cc7dc8637c35b5f2345759318a9cf80722))
+* **deps:** update dependency fastify to v5.12.1 ([dd7efcd](https://github.com/andsouto/trastienda/commit/dd7efcd3167b61d175e0ffe384a4335dc133e4eb))
+* **deps:** update dependency fastify to v5.12.3 ([058c9b2](https://github.com/andsouto/trastienda/commit/058c9b2ecf9e2c3aa22285ba5c91b2721be4ea1f))
+* **deps:** update dependency fastify to v5.12.4 ([62aca5f](https://github.com/andsouto/trastienda/commit/62aca5f827c7fc90a4fca7d8fea7092a87db3270))
+* **deps:** update dependency fastify to v5.12.5 ([f2a4514](https://github.com/andsouto/trastienda/commit/f2a451498e817449f0807cb53b12d578f3eb1267))
+* **deps:** update dependency jose to v6.2.12 ([c743435](https://github.com/andsouto/trastienda/commit/c743435db29c286992cecd9423052c93782b1682))
+* **deps:** update prisma monorepo to v7.10.0 ([6131d9c](https://github.com/andsouto/trastienda/commit/6131d9cb3714cc465ac1619c891ec1fcb15a33b3))
+* **deps:** update prisma monorepo to v7.9.0 ([52ab7ff](https://github.com/andsouto/trastienda/commit/52ab7ff29818aac20e02b62c1c8d872a8efab6da))
+* **deps:** update prisma monorepo to v7.9.1 ([6212b76](https://github.com/andsouto/trastienda/commit/6212b76639dceb01d8fdfe11a3ed6e568e2b86e0))
