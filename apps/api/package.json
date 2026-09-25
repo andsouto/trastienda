@@ -18,7 +18,7 @@
     "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
-    "@fastify/swagger": "9.8.1",
+    "@fastify/swagger": "9.9.0",
     "@fastify/type-provider-typebox": "6.1.0",
     "@prisma/adapter-pg": "7.10.0",
     "@prisma/client": "7.10.0",
