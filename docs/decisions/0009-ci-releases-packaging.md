@@ -67,6 +67,26 @@ repos.
   `true` only with the reason on its line. A script runs as the developer on every
   install, before anything imports the package. Workflows declare read-only `permissions`
   (the repo default is read as well): `verify` executes every dependency's code.
+- **CodeQL is a required check.** It runs as a workflow (`codeql.yml`) with the `default`
+  suite over JS/TS and the workflows themselves: cross-file taint tracking and
+  Actions-specific queries, the one layer ESLint cannot provide (Prisma is not modelled,
+  so raw queries go unchecked). What is required is its `CodeQL` result check, which fails
+  on high or critical alerts in the lines a PR changes, and the two `Analyze` jobs as
+  well: the result check can pass as soon as the first language is uploaded (a neutral
+  "waiting" counts as passing too), and only both jobs finishing guarantees both languages
+  are in. It adds about 15 s to a Renovate automerge (67 s against `verify`'s 55 s). It is
+  a workflow rather than GitHub's default setup because default setup skips PRs from
+  forks, and a required check that never reports leaves a contributor's PR unmergeable.
+  The job holds `security-events: write` to upload results, but never installs or runs
+  dependency code.
+- **AI review is advisory.** Every tool on Code Review Bench, an open benchmark of real
+  PRs with human-curated findings, scores F1 45–65, so none of them gates a merge; the
+  constraint is free on a public repo, with nothing charged to a personal quota.
+  **CodeRabbit** reviews PRs from `.coderabbit.yaml`, whose comments carry the reason for
+  each setting. It only comments, never approves, requests changes, commits or opens PRs:
+  every commit lands verbatim on `main` and has to pass commitlint, and failures here are
+  fixed by regenerating. Chosen over Sourcery because it reads `CLAUDE.md` and keeps its
+  configuration in the repo.
 - **Release artifacts, all living in this repo** (packaging is part of the product):
   multi-arch Docker images to GHCR, a docker-compose quickstart, a reference Kustomize
   base in `deploy/`, and a **Timoni module** published as an OCI artifact to GHCR.
@@ -83,4 +103,7 @@ repos.
   `contracts` becomes a published npm package with external consumers.
 - **Helm**: maintainer dislikes it; Kustomize + Timoni cover the spectrum.
 - **Dependabot**: native and zero-setup, but its grouping is too coarse for a pnpm
-  workspace and it ignores `mise.toml`.
+  workspace and it ignores `mise.toml`. Only its alerts are on, because Renovate reads
+  them to open vulnerability fixes ahead of its schedule and limits.
+- **SonarQube Cloud, Codacy, DeepSource**: their free tier duplicates the ESLint setup and
+  the coverage thresholds Vitest enforces on its own.
