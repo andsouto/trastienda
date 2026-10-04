@@ -7,10 +7,10 @@ block.
 
 This is the one document that tracks state: what is done, what comes next, and the
 decisions still open with the evidence gathered so far. Why things are the way they are
-lives in the [ADRs](decisions/); the domain decisions behind these blocks are in
-[ADR-0012](decisions/0012-domain-model-aggregates.md),
+lives in the [ADRs](decisions/): the rules across modules in
 [ADR-0013](decisions/0013-invariants-unit-of-work-bridges.md) and
-[ADR-0014](decisions/0014-fiscal-and-deployment-scope.md).
+[ADR-0014](decisions/0014-fiscal-and-deployment-scope.md). A block designed ahead of
+its code links its design in [design/](design/), which goes when the block lands.
 
 ## 1. Foundations — in progress
 
@@ -32,20 +32,23 @@ Left:
 
 Category tree, brands, seasons; products with options and variants, SKU and GTINs,
 price with optional variant override, lifecycle states. Everything else references it.
-Its first screen settles the UI library (see [open decisions](#ui-library-taiga-ui-or-ng-zorro-antd)).
+Its first screen settles the UI library (see
+[open decisions](#ui-library-taiga-ui-or-ng-zorro-antd)). Design:
+[design/catalog.md](design/catalog.md).
 
 ## 3. Inventory
 
 Locations, `StockLevel` and the movement ledger, receipts, adjustments and shrinkage,
 instant transfers, and **physical stock counts** — which belong here rather than later,
-because they are what makes allowing negative balances liveable.
+because they are what makes allowing negative balances liveable. Design:
+[design/inventory.md](design/inventory.md).
 
 ## 4. Sales
 
 Tickets with frozen price and tax, series and gapless numbering, returns. Shaped for
 VERI*FACTU from the start even though submission does not exist yet. Includes the
 offline-first cart (client-owned, synced, no expiry, no stock reservation) and the
-optional customer link.
+optional customer link. Design: [design/sales.md](design/sales.md).
 
 ## 5. VERI*FACTU
 

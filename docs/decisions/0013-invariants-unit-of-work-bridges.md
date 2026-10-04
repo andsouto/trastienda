@@ -2,9 +2,9 @@
 
 ## Context
 
-Designing the model (ADR-0012) surfaced a set of rules that do not fit inside any
-aggregate, and a UnitOfWork with more clients than ADR-0005 anticipated. Both need a
-single criterion rather than a decision per case.
+Designing the domain model ([docs/design/](../design/)) surfaced a set of rules that do
+not fit inside any aggregate, and a UnitOfWork with more clients than ADR-0005
+anticipated. Both need a single criterion rather than a decision per case.
 
 ## Decision
 

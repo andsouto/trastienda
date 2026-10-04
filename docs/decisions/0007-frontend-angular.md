@@ -22,8 +22,9 @@ configured in `apps/admin/orval.config.ts`, emitting into
 The shape is `override.angular.retrievalClient: 'both'`: **`httpResource`
 helpers for reads** (signal-first, which is the Angular 22 data path) and **injectable
 `HttpClient` services for writes**. Both sit on `HttpClient`, so **interceptors stay the
-place for the auth token, retries and the offline cart queue (ADR-0012)** — the
-requirement that drove this decision in the first place.
+place for the auth token, retries and the offline cart queue
+([sales design](../design/sales.md))** — the requirement that drove this decision in
+the first place.
 
 Orval replaces `openapi-typescript` in the admin: it generates its own models rather
 than a `paths` type. The principle of ADR-0006 is untouched, only the generator

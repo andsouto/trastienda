@@ -11,7 +11,8 @@ decrement stock across N variants.
 - PostgreSQL is the only source of truth.
 - Stock is modeled as a **ledger of movements** (goods receipt, sale, adjustment,
   return): the accounting source of truth, from which the balance is derived and always
-  rebuildable. What holds and locks the balance is ADR-0012's.
+  rebuildable. What holds and locks the balance is in the
+  [inventory design](../design/inventory.md).
 - Flexible per-product attributes use JSONB columns.
 - Photos/binaries go to object storage (S3/R2/MinIO); the DB stores only keys/URLs.
 - Money is stored as integer cents, never floats.
