@@ -95,9 +95,9 @@ release tag, and with them the CD design for the maintainer's own deployment. Th
 ## Later, unordered
 
 Freight cost allocation across a shipment, management UI for reference data, goods in
-transit and reservations, descriptive attributes with filtering, the public shop (a
-separate repo consuming the same API), full data export, change auditing beyond the
-ledger.
+transit, reservations and inter-warehouse allocation rules, descriptive attributes
+with filtering, the public shop (a separate repo consuming the same API), full data
+export, change auditing beyond the ledger.
 
 ## Deliberately excluded
 
