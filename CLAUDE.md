@@ -49,14 +49,14 @@ without new evidence.
 ## Tooling
 
 - **mise** pins node + pnpm + process-compose (`mise.toml`) and is the source for the
-  node version; the workflow has to repeat it (setup-node cannot read `mise.toml` yet),
-  so Renovate moves both pins in one PR and CI fails if they drift apart.
+  node version; `ci.yml` repeats the node pin (its comment says why), Renovate moves
+  both pins in one PR and CI fails if they drift apart.
   `packageManager` in package.json is the authoritative pnpm pin (no corepack — pnpm
   self-switches to it).
 - **Dependency build scripts are off** (`allowBuilds` all `false`, `strictDepBuilds`); the
   comment in `pnpm-workspace.yaml` says how to classify a new one.
 - **TypeScript 6.0.x everywhere**: required by Angular 22 (`>=6.0 <6.1`) and the
-  ceiling of typescript-eslint (`<6.1`). Move to TS 7 when typescript-eslint allows.
+  ceiling of typescript-eslint (`<6.1`). Move to TS 7 when both allow it.
 - **ESLint owns TS/JS, config per app** (`apps/api/eslint.config.js`,
   `apps/admin/eslint.config.js`), each importing the shared ruleset from
   `eslint.base.config.js` at root (tseslint strictTypeChecked + stylisticTypeChecked,
