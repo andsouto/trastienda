@@ -104,10 +104,12 @@ without new evidence.
 - **Each doc holds one kind of truth.** CLAUDE.md: how to work here today. ADRs: why —
   what was decided, built or not, and the alternatives rejected; living documents,
   updated in place, git is the history. `docs/roadmap.md`: state — done, next, and the
-  open decisions with their evidence. A change that makes any of them untrue fixes it
-  in the same PR. Nothing that expires on its own: no status dates, a version only when
-  it is the constraint, tool popularity only as evidence for an open decision, and a
-  fact about a third-party tool next to the config it affects.
+  open decisions with their evidence. `docs/design/`: a block's design ahead of its
+  code, deleted when the block lands once any lasting why has moved to an ADR. A change
+  that makes any of them untrue fixes it in the same PR. Nothing that expires on its
+  own: no status dates, a version only when it is the constraint, tool popularity only
+  as evidence for an open decision, and a fact about a third-party tool next to the
+  config it affects.
 - TypeScript strict; erasable-syntax-only in `apps/api` (no `enum`, no `namespace`,
   no decorators) so code stays compatible with Node's native type stripping. Relative
   imports use the real `.ts` extension (`rewriteRelativeImportExtensions` handles the
@@ -124,8 +126,9 @@ without new evidence.
 
 ## Domain model
 
-Designed in full in ADR-0012 (aggregates), ADR-0013 (consistency) and ADR-0014
-(fiscal). The base needed to work without re-reading it all:
+Designed in full before the code: per block in [docs/design/](docs/design/), across
+modules in ADR-0013 (consistency) and ADR-0014 (fiscal). The base needed to work
+without re-reading it all:
 
 - **Aggregate roots**: `Product` (variants are internal entities with globally unique
   UUIDs — that UUID is what everything else references), `StockLevel` (variant +

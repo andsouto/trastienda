@@ -25,6 +25,5 @@ and the decisions still open live in the [roadmap](../roadmap.md), not here.
 | [0009](0009-ci-releases-packaging.md) | GitHub Actions + release-please; packaging ships with the app |
 | [0010](0010-license-agpl.md) | AGPL-3.0 |
 | [0011](0011-project-name.md) | "trastienda" as the project name |
-| [0012](0012-domain-model-aggregates.md) | Domain model: aggregates and their boundaries |
 | [0013](0013-invariants-unit-of-work-bridges.md) | Cross-aggregate invariants, UnitOfWork and bridges |
 | [0014](0014-fiscal-and-deployment-scope.md) | Fiscal scope (Spain, VERI*FACTU) and single-tenant |
