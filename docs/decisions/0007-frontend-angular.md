@@ -17,14 +17,14 @@ zoneless is the default path, so both are load-bearing rather than aspirational.
 
 The contract stays the source (ADR-0006): the admin generates its client from
 `openapi.json`, the same artifact any external consumer gets. What is decided here is
-*how*: **orval** (MIT, v8.26.0, ~1.9M weekly downloads, 74 contributors over the last
-quarter), configured in `apps/admin/orval.config.ts`, emitting into
+*how*: **orval** (MIT, 74 contributors over the quarter before the decision),
+configured in `apps/admin/orval.config.ts`, emitting into
 `src/app/core/api/` and committed like the spec itself.
 
 The shape is `override.angular.retrievalClient: 'both'`: **`httpResource`
 helpers for reads** (signal-first, which is the Angular 22 data path) and **injectable
-`HttpClient` services for writes**. Both sit on `HttpClient`, so **interceptors keep
-being where the auth token, retries and the offline cart queue (ADR-0012) live** — the
+`HttpClient` services for writes**. Both sit on `HttpClient`, so **interceptors stay the
+place for the auth token, retries and the offline cart queue (ADR-0012)** — the
 requirement that drove this decision in the first place.
 
 Orval replaces `openapi-typescript` in the admin: it generates its own models rather

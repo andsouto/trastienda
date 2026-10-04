@@ -16,7 +16,7 @@ A public online shop is planned later, plus the maintainer's own Kubernetes depl
   genuinely run on both sides — invoice chain hashing and QR generation for offline
   tills, per ADR-0014 — is a legitimate shared package when block 12 arrives.
 - **Deployment/instance repo (private)**: the maintainer's environment config (values,
-  overlays, secrets). Packaging itself lives here (see ADR-0009).
+  overlays, secrets). Packaging itself stays in this repo (ADR-0009).
 - **Shop repo (future, private)**: an external API consumer with its own branding.
 
 ## Rationale
