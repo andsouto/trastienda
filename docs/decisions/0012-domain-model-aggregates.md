@@ -123,11 +123,3 @@ document freezes.
 - Product-level optimistic locking means two people editing different variants of the
   same product conflict. Irrelevant at this scale.
 - Aggregate loads over-fetch for list screens; read models cover those (ADR-0005).
-
-## Deliberately excluded
-
-Lot, expiry and serial tracking (it would change the balance key from variant to
-variant+lot); size-system equivalences (approximate, manufacturer-dependent, and only
-needed for supplier imports); multi-category products (breaks per-category reporting
-sums); goods in transit, stock reservations and inter-warehouse allocation rules;
-catalog import (no standard format — a script against the API is the right shape).

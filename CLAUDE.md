@@ -26,35 +26,24 @@ without new evidence.
   committed; `pnpm codegen` regenerates, CI fails on drift.
 - **Frontend**: Angular 22 (standalone, signals, zoneless), Vitest via `ng test`.
   Resource APIs (`resource`/`rxResource`/`httpResource`) are stable in v22 and are the
-  intended data-fetching path. The API client is generated from `openapi.json` with
-  **orval** into `apps/admin/src/app/core/api/` (`apps/admin/orval.config.ts`);
-  auth, retries and the offline cart queue belong in interceptors (ADR-0007).
-  `retrievalClient` is `'both'`: `httpResource` helpers (`*.resource.ts`) for reads,
-  injectable services for writes. Renovate's orval bumps go red on the codegen-drift
-  check whenever the emitted output changes (it cannot run `pnpm codegen`): bump by
-  hand and commit the regenerated client.
+  intended data-fetching path. orval emits the API client into
+  `apps/admin/src/app/core/api/` (`apps/admin/orval.config.ts`); auth, retries and the
+  offline cart queue belong in interceptors (ADR-0007). `retrievalClient` is `'both'`:
+  `httpResource` helpers (`*.resource.ts`) for reads, injectable services for writes.
+  Renovate's orval bumps go red on the codegen-drift check whenever the emitted output
+  changes (it cannot run `pnpm codegen`): bump by hand and commit the regenerated
+  client.
 - **Auth**: the API is a provider-agnostic OIDC resource server; Zitadel is the
   reference IdP in compose at http://localhost:8080 (ADR-0008). Tests use a fake JWKS.
 - **Repo**: pnpm-workspaces monorepo — `apps/api`, `apps/admin` (ADR-0001). No task
   orchestrator yet (add Turborepo when CI hurts).
-- **CI/CD**: GitHub Actions (`.github/workflows/ci.yml`), conventional commits,
-  release-please manifest mode with a single product version (ADR-0009). `main` only
-  takes rebase merges (no merge commits, no squash), gated by a branch-protection
-  ruleset requiring green CI + commit-message lint. Releases are merged by hand — no
-  auto-publish while there is nothing installable. **Renovate** (`renovate.json`,
-  `config:best-practices`) opens dependency PRs: runtime deps land as `fix(deps)` (they
-  ship, so they earn a patch bump and a changelog line), tooling as `chore(deps)`.
-  **Updates automerge by default on green CI** — the pipeline is the evidence and the
-  release is never auto-published. Only two things wait for a human: majors, and Zitadel
-  minors (CI never boots it and it migrates its schema on start, so it is tried by hand).
-  **All versions are pinned exactly** — these are apps, not libraries, so every version
-  change shows up in a reviewable diff.
-  **CodeQL** (`.github/workflows/codeql.yml`) is required: its `CodeQL` result fails the
-  PR on high or critical alerts, and its two `Analyze` jobs are required too, so the merge
-  waits for both languages. Copilot Autofix suggests fixes.
-  **CodeRabbit** reviews PRs from `.coderabbit.yaml` and is advisory: it comments, never
-  commits, approves or blocks, and skips Renovate. Below 10 stars it only reviews on
-  `@coderabbitai review`: ask once per PR, when the branch is green.
+- **CI/CD** (ADR-0009): GitHub Actions; `main` only takes rebase merges through a PR,
+  with `verify`, `commitlint`, `CodeQL` and its two `Analyze` jobs required.
+  release-please (manifest mode, one product version) keeps a release PR that is merged
+  by hand. Renovate automerges on green CI except majors and Zitadel minors; runtime
+  deps land as `fix(deps)`, tooling as `chore(deps)`. **All versions are pinned
+  exactly.** CodeRabbit (`.coderabbit.yaml`) is advisory, and when it reviews is the
+  maintainer's call: agents never post `@coderabbitai` commands.
 - **License**: AGPL-3.0 (ADR-0010). "trastienda" is the definitive name (ADR-0011).
 
 ## Tooling

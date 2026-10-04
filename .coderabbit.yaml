@@ -14,6 +14,8 @@ reviews:
   # The PR description belongs to its author: the summary goes in the bot's comment
   high_level_summary_in_walkthrough: true
   in_progress_fortune: false
+  # During the initial trial CodeRabbit reviews every PR on its own; after it, below 10
+  # stars on the repo, it only reviews on a `@coderabbitai review` comment
   auto_review:
     # Renovate PRs automerge on green CI; the release PR is generated
     ignore_usernames:
