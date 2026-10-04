@@ -1,7 +1,5 @@
 # ADR-0008: Provider-agnostic OIDC resource server; Zitadel as reference IdP
 
-- Status: accepted
-
 ## Context
 
 Auth is too critical to hand-roll. The product is self-hosted OSS: deployers must be

@@ -1,7 +1,5 @@
 # ADR-0006: OpenAPI as the canonical contract for all consumers
 
-- Status: accepted
-
 ## Context
 
 Admin app (internal consumer) and future shop/third parties (external consumers) must

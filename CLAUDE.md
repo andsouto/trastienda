@@ -5,16 +5,11 @@ variants (size/color), stock tracked as a movement ledger, sales tickets and pur
 invoices. Backend API + admin web app. A future public online shop will be an external
 consumer of the same API (out of scope for now, separate private repo).
 
-**Status (2026-08-03):** monorepo scaffolded and verified (CI, compose, codegen chain);
-commit messages now linted per-commit in CI (rebase-only merges to `main`, ADR-0009);
-repo is public with the branch-protection ruleset live (PR required, `verify`,
-`commitlint` and `CodeQL` checks required and up to date, linear history, no force-push).
-**No domain code yet, but the domain model is designed** (ADR-0012/0013/0014) and the
-implementation order is in [docs/roadmap.md](docs/roadmap.md) — next up is block 1,
-foundations. Foundational decisions are ADRs in
-[docs/decisions/](docs/decisions/) — read them before proposing changes to stack or
-architecture; do not re-litigate settled decisions without new evidence. ADRs are
-living documents: update in place, git is the history.
+Where the work stands, what comes next and the decisions still open are in
+[docs/roadmap.md](docs/roadmap.md), the only document that tracks state. Why things are
+the way they are is in the ADRs in [docs/decisions/](docs/decisions/): read them before
+proposing changes to stack or architecture, and do not re-litigate settled decisions
+without new evidence.
 
 ## Stack summary
 
@@ -38,8 +33,6 @@ living documents: update in place, git is the history.
   injectable services for writes. Renovate's orval bumps go red on the codegen-drift
   check whenever the emitted output changes (it cannot run `pnpm codegen`): bump by
   hand and commit the regenerated client.
-  UI library narrowed to Taiga UI (leading) vs ng-zorro-antd, decided by a spike once
-  there are real screens.
 - **Auth**: the API is a provider-agnostic OIDC resource server; Zitadel is the
   reference IdP in compose at http://localhost:8080 (ADR-0008). Tests use a fake JWKS.
 - **Repo**: pnpm-workspaces monorepo — `apps/api`, `apps/admin` (ADR-0001). No task
@@ -62,7 +55,6 @@ living documents: update in place, git is the history.
   **CodeRabbit** reviews PRs from `.coderabbit.yaml` and is advisory: it comments, never
   commits, approves or blocks, and skips Renovate. Below 10 stars it only reviews on
   `@coderabbitai review`: ask once per PR, when the branch is green.
-  Docker images/Kustomize/Timoni arrive when there is something to package.
 - **License**: AGPL-3.0 (ADR-0010). "trastienda" is the definitive name (ADR-0011).
 
 ## Tooling
@@ -120,6 +112,13 @@ living documents: update in place, git is the history.
   checklists or status reports: those are read as history months later, when they mean
   nothing and have cost the reader time. Say them in a PR comment instead, and put a
   long rationale in the ADR the commit references.
+- **Each doc holds one kind of truth.** CLAUDE.md: how to work here today. ADRs: why —
+  what was decided, built or not, and the alternatives rejected; living documents,
+  updated in place, git is the history. `docs/roadmap.md`: state — done, next, and the
+  open decisions with their evidence. A change that makes any of them untrue fixes it
+  in the same PR. Nothing that expires on its own: no status dates, a version only when
+  it is the constraint, tool popularity only as evidence for an open decision, and a
+  fact about a third-party tool next to the config it affects.
 - TypeScript strict; erasable-syntax-only in `apps/api` (no `enum`, no `namespace`,
   no decorators) so code stays compatible with Node's native type stripping. Relative
   imports use the real `.ts` extension (`rewriteRelativeImportExtensions` handles the
@@ -155,28 +154,3 @@ Designed in full in ADR-0012 (aggregates), ADR-0013 (consistency) and ADR-0014
   except the frozen year-end snapshot.
 - **Cross-aggregate invariants always name their mechanism** (unique index, row lock,
   or an explicit "nothing"). See the table in ADR-0013.
-
-## Pending decisions
-
-- Angular UI library: **Taiga UI vs ng-zorro-antd** (ADR-0007). Material and spartan-ng
-  are out. Taiga leads on catalog, maintenance health and peer range; ng-zorro still has
-  the better data table, so the tiebreaker is one real catalog screen built both ways —
-  which needs an API first.
-- How the *declaración responsable* required by RD 1007/2023 works for AGPL software
-  deployed and modified by third parties (ADR-0014); needs advice, not a guess.
-- A formal trademark scan for "trastienda" before publishing artifacts (ADR-0011).
-- Whether to push orval upstream on `tagsSplitDeduplication`, which does nothing for the
-  Angular client — measured and parked in ADR-0007, to revisit once the client has
-  several tags.
-
-## Next steps
-
-Implementation order lives in [docs/roadmap.md](docs/roadmap.md). Immediately:
-
-1. OIDC auth plugin in the API (jose + remote JWKS) — first, so the first route is
-   written with its final shape instead of being retrofitted.
-2. Rest of block 1: shared kernel (`Money`, `TaxRate`) with its boundaries and
-   `bridges/` rules in the eslint config, business configuration (tax regime + seeded
-   editable rates), reference data seeds (scales, palettes).
-3. Block 2 (catalog) as the first full vertical slice, Prisma schema and first
-   migration included.

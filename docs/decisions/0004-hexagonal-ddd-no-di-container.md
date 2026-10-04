@@ -1,7 +1,5 @@
 # ADR-0004: Hexagonal architecture with DDD tactical patterns; no DI container
 
-- Status: accepted
-
 ## Context
 
 Core project goal: strict separation of domain / persistence / presentation. The

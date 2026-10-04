@@ -1,7 +1,5 @@
 # ADR-0010: AGPL-3.0
 
-- Status: accepted
-
 ## Context
 
 The product (API + admin) is open source and generic; it is deployable management

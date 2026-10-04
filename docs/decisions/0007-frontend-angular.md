@@ -1,6 +1,4 @@
-# ADR-0007: Admin frontend in modern Angular; orval for the API client, UI library narrowed
-
-- Status: accepted (UI library: narrowed to two, pending a spike)
+# ADR-0007: Admin frontend in modern Angular; orval for the API client
 
 ## Context
 
@@ -51,69 +49,17 @@ contact:** the emitted `*.resource.ts` did not compile under
 regression guard that typechecks the generated samples under the flag — so the risk
 is real, and covered where it should be.
 
-**Still deferred to block 1**, with the first real endpoint: that interceptors compose
-as expected over the generated services. Same posture as the UI library spike below —
-decided on paper, confirmed on contact.
-
-**`tagsSplitDeduplication` is parked, with the measurement that says it can wait.** The
-option promises to hoist each tag file's shared plumbing into a `common-types.ts`; with
-`client: 'angular'` it hoists nothing, because `@orval/angular` never declares
-`sharedTypes` (`fetch`, `query`, `swr` and `mcp` do), so it adds nothing — the root
-barrel comes regardless. That leaves ~140 of every `*.resource.ts`'s 171 lines
-duplicated per tag. It is not a bundle problem: ten copies of that block in one chunk
-cost 587 B gzipped against 507 B for one, because DEFLATE references the repeats; only
-copies landing in separate lazy chunks pay in full, about 0.5 kB gzipped each. What it
-does cost is ~140 committed lines per tag regenerated
-into every contract diff, and duplication is where generator drift hides — #3813 was
-exactly a drifted copy of core's import rule in the resource files. Worth raising
-upstream as a documentation-or-behaviour mismatch (either wire angular in or document
-the limitation), but once there are several tags to measure in a real app rather than
-in a lab.
-
-### UI library: Taiga UI leading, ng-zorro-antd the alternative
-
-Measured in August 2026, all four candidates supported Angular 22, so compatibility
-decided nothing. Maintenance health did:
-
-| | ng-zorro-antd | Taiga UI | spartan-ng |
-|---|---|---|---|
-| License | MIT | Apache-2.0 | MIT |
-| Stars | 9.2k | 4.0k | 2.8k |
-| Commits over 3.5 months | 74 | 508 (164 by bots) | 537 |
-| Distinct authors | 11 | 21 | 36 |
-| Open issues | 783 | 154 | 88 |
-| Components | 83 | ~91 plus addons | 62 |
-
-- **Angular Material — rejected.** Smallest component set of the four and a design
-  language built for low information density and touch, while this is a dense
-  back-office. `MatTable` is a low-level primitive: filtering, sorting and paging would
-  be built on top.
-- **spartan-ng — rejected.** Best contributor health of the three, and the earlier
-  read of it as a one-maintainer project was wrong (that is only true of npm
-  publishing). It loses on cost: its CLI copies component source into the repo, so
-  those lines become ours to maintain, and its `table` is a styled primitive rather
-  than a data grid — the ledger and catalog screens would need TanStack Table on top.
-- **Taiga UI — leading.** Largest catalog, including `addon-table` and an
-  `addon-commerce` with money and card inputs that lands directly in this domain.
-  Peer range `>=19`, so it never blocks an Angular major. Zoneless and hydration
-  compatible. Healthily maintained by three core people plus bots.
-- **ng-zorro-antd — alternative.** Its table is still the most batteries-included of
-  the lot, which is what the catalog and ledger screens lean on hardest. Against it:
-  by far the least active of the three (74 commits concentrated in one person) despite
-  being the most starred, 783 open issues, and a `^22` peer that makes every Angular
-  major wait for it.
-
-**Deciding test, deferred until there are real screens to build:** implement one
-catalog screen against `addon-table` and against ng-zorro's table. Taiga wins on
-everything except the table, so the table is what has to be tried.
-
-One risk to weigh that is not visible in the numbers: Taiga's core team is Russian (it
-originates at Tinkoff / T-Bank). That is not a license risk — Apache-2.0 is
-irrevocable for what is published — but Russian-origin OSS has lost infrastructure
-access to sanctions before, and that is a continuity question.
-
 ## Alternatives rejected
 
+- **Angular Material**: the smallest component set of the UI libraries measured and a
+  design language built for low information density and touch, while this is a dense
+  back-office. `MatTable` is a low-level primitive: filtering, sorting and paging would
+  be built on top.
+- **spartan-ng**: the best contributor health of them (reading it as a one-maintainer
+  project was wrong; that is only true of npm publishing), but it loses on cost: its
+  CLI copies component source into the repo, so those lines become ours to maintain,
+  and its `table` is a styled primitive rather than a data grid — the ledger and
+  catalog screens would need TanStack Table on top.
 - **PrimeNG**: disqualified June 2026 — v22+ moved to a commercial license (PrimeUI),
   community edition gated by company size/revenue; existing MIT versions frozen.
   Unacceptable dependency for an AGPL open-source product.

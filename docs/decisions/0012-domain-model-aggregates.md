@@ -1,7 +1,5 @@
 # ADR-0012: Domain model — aggregates and their boundaries
 
-- Status: accepted
-
 ## Context
 
 The domain model was designed in full before writing code, so that the aggregate
