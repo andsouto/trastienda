@@ -7,9 +7,9 @@ Open-source inventory and sales management for small retail.
 - Sales tickets and purchase invoices.
 - REST API (OpenAPI) + Angular admin app. Bring your own OIDC identity provider.
 
-> ⚠️ Early stage: the domain model is designed, no domain code yet. Architecture
-> decisions live in [docs/decisions/](docs/decisions/) and the implementation order in
-> [docs/roadmap.md](docs/roadmap.md).
+> ⚠️ Early stage: not usable yet. Where it stands and what comes next is in
+> [docs/roadmap.md](docs/roadmap.md); why it is built the way it is, in
+> [docs/decisions/](docs/decisions/).
 
 ## Development
 

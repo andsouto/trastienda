@@ -1,7 +1,5 @@
 # ADR-0005: Prisma as ORM, contained behind repositories and a UnitOfWork port
 
-- Status: accepted
-
 ## Context
 
 Finalists: Prisma 7 (TypeScript query compiler since Nov 2025 — historical weight/perf

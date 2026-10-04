@@ -1,7 +1,5 @@
 # ADR-0003: Backend on Node LTS with Fastify + TypeBox
 
-- Status: accepted
-
 ## Context
 
 Goals: TypeScript everywhere, high performance on cheap low-resource servers, a

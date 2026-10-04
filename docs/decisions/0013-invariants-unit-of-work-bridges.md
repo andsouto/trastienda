@@ -1,7 +1,5 @@
 # ADR-0013: Cross-aggregate invariants, UnitOfWork and inter-module bridges
 
-- Status: accepted
-
 ## Context
 
 Designing the model (ADR-0012) surfaced a set of rules that do not fit inside any

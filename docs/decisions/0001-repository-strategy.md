@@ -1,7 +1,5 @@
 # ADR-0001: Monorepo for the product; deployment config and shop in separate repos
 
-- Status: accepted
-
 ## Context
 
 The product has two artifacts sharing one API contract (backend API + admin web app).

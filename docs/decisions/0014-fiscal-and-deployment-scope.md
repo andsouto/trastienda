@@ -1,7 +1,5 @@
 # ADR-0014: Fiscal scope (Spain, VERI*FACTU) and single-tenant deployment
 
-- Status: accepted
-
 ## Context
 
 The product issues invoices in Spain, so Spanish invoicing law is a design input, not
@@ -124,16 +122,6 @@ would touch every table, every query and the whole authorisation model, and for 
 software a cross-tenant bug is a legal incident, not a bug. If offering this as a
 service ever makes sense, the operational saving is available through a database or
 schema per customer with the same single-tenant code — orchestration, not a rewrite.
-
-## Open questions
-
-- **Declaración responsable.** Certification is self-certification by the producer,
-  embedded in the product, and it also binds those who develop software for their own
-  use. How that works for AGPL software that third parties deploy and modify is not
-  resolved in the official sources; it needs advice before anyone invoices for real.
-- **Legal disclaimer.** AGPL sections 15 and 16 already exclude warranty, but a note
-  stating who assumes the responsible declaration in each deployment is warranted once
-  the product is usable.
 
 ## Revisit trigger
 

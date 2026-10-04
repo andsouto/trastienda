@@ -9,6 +9,9 @@ They are not a spec to satisfy at all costs. If reality or intent diverges from 
 ADR says, that's a prompt to edit the ADR, not to contort the implementation (or delay
 work) to match stale text.
 
+An ADR records what is decided, built or not. Whether it is built yet, what comes next
+and the decisions still open live in the [roadmap](../roadmap.md), not here.
+
 | # | Decision |
 |---|----------|
 | [0001](0001-repository-strategy.md) | Monorepo for the product; deploy config and shop in separate repos |
@@ -17,7 +20,7 @@ work) to match stale text.
 | [0004](0004-hexagonal-ddd-no-di-container.md) | Hexagonal + DDD by domain module; no DI container |
 | [0005](0005-prisma-behind-repositories.md) | Prisma behind repositories + UnitOfWork port |
 | [0006](0006-openapi-canonical-contract.md) | OpenAPI as the canonical contract for all consumers |
-| [0007](0007-frontend-angular.md) | Admin in modern Angular; UI library pending |
+| [0007](0007-frontend-angular.md) | Admin in modern Angular; orval for the API client |
 | [0008](0008-oidc-resource-server.md) | Provider-agnostic OIDC resource server; Zitadel reference |
 | [0009](0009-ci-releases-packaging.md) | GitHub Actions + release-please; packaging ships with the app |
 | [0010](0010-license-agpl.md) | AGPL-3.0 |

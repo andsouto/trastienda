@@ -1,7 +1,5 @@
 # ADR-0002: PostgreSQL as the single source of truth; stock as a movement ledger
 
-- Status: accepted
-
 ## Context
 
 The domain is strongly relational and transactional: products with variants

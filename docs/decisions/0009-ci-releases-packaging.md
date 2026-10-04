@@ -1,7 +1,5 @@
 # ADR-0009: GitHub Actions + conventional commits + release-please; packaging ships with the app
 
-- Status: accepted
-
 ## Context
 
 Goal: maximum CI automation. GitHub Actions is free/unlimited for public repos and the
@@ -93,7 +91,7 @@ repos.
   Kustomize remains the tool-neutral documented path; Timoni is offered alongside, not
   as the only official install method (adoption risk).
 - The private environment repo holds only instance config (GitOps app-repo /
-  env-repo split). CD design is deferred until deployment is real.
+  env-repo split).
 
 ## Alternatives rejected
 
