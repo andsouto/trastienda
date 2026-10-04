@@ -24,8 +24,8 @@ repos.
   rebase merge preserves each commit verbatim on `main`. release-please depends on
   this to generate the changelog and version bump correctly.
 - **Releases**: conventional commits + **release-please** (manifest mode). It keeps a
-  release PR open with accumulated changelog/version bumps; merging it creates
-  tags/releases, and tag-triggered workflows build artifacts. Merge is manual and
+  release PR open with accumulated changelog/version bumps; merging it creates the tag
+  and the release, and artifacts will be built from the tag. Merge is manual and
   deliberate — nothing installable exists yet, so nothing should auto-publish. The repo
   does allow auto-merge (Renovate uses it for dependency PRs), but nothing enables it on
   the release PR: publishing stays a human decision.
@@ -99,8 +99,7 @@ repos.
 
 - **semantic-release**: monorepo support only via brittle community plugins.
 - **Changesets**: monorepo-native but declaration-file-per-PR workflow; better suited
-  to npm library constellations than to an app releasing Docker images. Re-evaluate if
-  `contracts` becomes a published npm package with external consumers.
+  to npm library constellations than to an app releasing Docker images.
 - **Helm**: maintainer dislikes it; Kustomize + Timoni cover the spectrum.
 - **Dependabot**: native and zero-setup, but its grouping is too coarse for a pnpm
   workspace and it ignores `mise.toml`. Only its alerts are on, because Renovate reads

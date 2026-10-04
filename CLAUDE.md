@@ -33,7 +33,7 @@ living documents: update in place, git is the history.
   Resource APIs (`resource`/`rxResource`/`httpResource`) are stable in v22 and are the
   intended data-fetching path. The API client is generated from `openapi.json` with
   **orval** into `apps/admin/src/app/core/api/` (`apps/admin/orval.config.ts`);
-  interceptors are where auth, retries and the offline cart queue live (ADR-0007).
+  auth, retries and the offline cart queue belong in interceptors (ADR-0007).
   `retrievalClient` is `'both'`: `httpResource` helpers (`*.resource.ts`) for reads,
   injectable services for writes. Renovate's orval bumps go red on the codegen-drift
   check whenever the emitted output changes (it cannot run `pnpm codegen`): bump by
