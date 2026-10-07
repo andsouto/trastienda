@@ -15,6 +15,7 @@ const EnvironmentSchema = Type.Object({
     ],
     { default: 'info' },
   ),
+  API_DOCS: Type.Boolean({ default: false }),
   DATABASE_URL: Type.String(),
   OIDC_ISSUER_URL: Type.String(),
   OIDC_AUDIENCE: Type.String({ minLength: 1 }),

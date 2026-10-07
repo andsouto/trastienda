@@ -6,6 +6,7 @@ import { createTokenVerifier } from './plugins/oidc.ts';
 const environment = loadEnvironment();
 
 const app = await buildApp({
+  apiReference: environment.API_DOCS,
   logger: { level: environment.LOG_LEVEL },
   verifyToken: createTokenVerifier({
     audience: environment.OIDC_AUDIENCE,

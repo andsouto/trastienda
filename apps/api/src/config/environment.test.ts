@@ -13,6 +13,12 @@ it('applies defaults for what is optional', () => {
 
   expect(environment.PORT).toBe(3000);
   expect(environment.LOG_LEVEL).toBe('info');
+  // Off unless asked for: what a production deployment gets.
+  expect(environment.API_DOCS).toBe(false);
+});
+
+it('reads API_DOCS from its string form', () => {
+  expect(loadEnvironment({ ...valid, API_DOCS: 'true' }).API_DOCS).toBe(true);
 });
 
 it.each([

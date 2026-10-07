@@ -48,7 +48,9 @@ pnpm codegen      # regenerate openapi.json + the admin client, commit the resul
 
 The canonical API contract is [apps/api/openapi.json](apps/api/openapi.json),
 generated from the TypeBox schemas; the admin consumes it through a generated client
-(orval), the same path offered to any external consumer.
+(orval), the same path offered to any external consumer. In development the API also
+serves it as a browsable reference at http://localhost:3000/docs (`API_DOCS=true`,
+already in `.env.example`).
 
 ## License
 
