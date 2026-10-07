@@ -27,6 +27,12 @@ Left:
 - Reference data: scales and palettes by seed, no management UI.
 - With the first real endpoint, confirming that interceptors compose as expected over
   the services orval generates (ADR-0007): decided on paper, confirmed on contact.
+- Admin login against the reference IdP: a public OIDC app with PKCE in the local
+  Zitadel, provisioned by `process-compose up` rather than clicked in its console, so
+  anyone's stack logs in as it starts. Catalog's first screen needs it. The API
+  reference at `/docs` reuses the same app for its Authorize, with its own redirect
+  URI; the committed contract keeps only `bearerAuth`, and the OAuth scheme goes only
+  into the spec served to the reference.
 
 ## 2. Catalog
 
