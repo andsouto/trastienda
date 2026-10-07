@@ -3,11 +3,16 @@ import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { fastify, type FastifyServerOptions } from 'fastify';
 
 import packageJson from '../package.json' with { type: 'json' };
+import { installApiReference } from './plugins/api-reference.ts';
 import { installAuth, protectScope, type VerifyToken } from './plugins/auth.ts';
 import { healthPlugin } from './plugins/health.ts';
 import { identityPlugin } from './plugins/identity.ts';
 
 export interface AppOptions {
+  /**
+  Serves the API reference at `/docs`. Development only: see `plugins/api-reference.ts`.
+  */
+  apiReference?: boolean;
   logger?: FastifyServerOptions['logger'];
   verifyToken: VerifyToken;
 }
@@ -40,6 +45,10 @@ export async function buildApp(options: AppOptions) {
       },
     },
   });
+
+  if (options.apiReference) {
+    await installApiReference(app);
+  }
 
   app.register(healthPlugin);
 

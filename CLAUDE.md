@@ -23,7 +23,9 @@ without new evidence.
 - **API contract**: TypeBox schemas drive validation, serialization and OpenAPI.
   `apps/api/openapi.json` is the canonical contract for ALL consumers; the admin
   generates its client from it with orval (ADR-0006/0007). Both generated outputs are
-  committed; `pnpm codegen` regenerates, CI fails on drift.
+  committed; `pnpm codegen` regenerates, CI fails on drift. `API_DOCS=true` (set in
+  `.env.example`) serves Scalar over the live spec at `/docs`; it is a devDependency,
+  so it never ships.
 - **Frontend**: Angular 22 (standalone, signals, zoneless), Vitest via `ng test`.
   Resource APIs (`resource`/`rxResource`/`httpResource`) are stable in v22 and are the
   intended data-fetching path. orval emits the API client into
