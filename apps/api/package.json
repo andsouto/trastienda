@@ -27,7 +27,7 @@
     "jose": "6.2.12"
   },
   "devDependencies": {
-    "@scalar/fastify-api-reference": "1.72.4",
+    "@scalar/fastify-api-reference": "1.73.0",
     "@testcontainers/postgresql": "12.2.0",
     "@types/node": "26.6.4",
     "dotenv": "18.0.5",
