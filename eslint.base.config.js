@@ -49,6 +49,7 @@ export function baseConfig(tsconfigRootDir) {
         'perfectionist/sort-named-exports': ['error', {type: 'natural'}],
         'unicorn/prevent-abbreviations': 'off',
         'unicorn/no-null': 'off',
+        'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
         '@typescript-eslint/no-unused-vars': ['error', {
           args: 'all',
           argsIgnorePattern: '^_',
@@ -58,9 +59,12 @@ export function baseConfig(tsconfigRootDir) {
       },
     },
 
-    // prisma.config.ts loads .env at import time by design
+    // Config files their tool loads, never imported: `export default
+    // defineConfig()` counts as a side effect, and prisma.config.ts also loads
+    // .env at import time by design. Listed by name so nothing is exempted by
+    // accident (a `*.config.ts` glob also matches the admin's app.config.ts).
     {
-      files: ['**/prisma.config.ts'],
+      files: ['**/orval.config.ts', '**/prisma.config.ts', '**/vitest.config.ts'],
       rules: {
         'unicorn/no-top-level-side-effects': 'off',
       },
