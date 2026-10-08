@@ -9,8 +9,8 @@
     "node": ">=24"
   },
   "scripts": {
-    "lint": "eslint . && pnpm -r lint",
-    "lint:fix": "eslint . --fix && pnpm -r lint:fix",
+    "lint": "eslint . && pnpm -r --no-bail lint",
+    "lint:fix": "eslint . --fix && pnpm -r --no-bail lint:fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "pnpm -r typecheck",
