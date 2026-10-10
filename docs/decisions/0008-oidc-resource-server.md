@@ -27,6 +27,34 @@ a browser too — which the offline till of ADR-0014 needs for chain hashing.
 `request.jwtVerify()` sugar over a hook we own anyway, and couples verification to
 Fastify, so the verifier stops being a plain function testable without a web framework.
 
+## Telling access tokens from ID tokens
+
+An issuer signs ID tokens with the same keys as access tokens, and RFC 8725 §3.12
+requires validation rules that tell the kinds apart. The standard way is RFC 9068's: an
+access token is typed `at+jwt`, and a resource server refuses any other type. That is
+what the API requires by default, and all a provider implementing RFC 9068 needs: Auth0
+with its RFC 9068 token profile, or Keycloak (from 26.2) with the client's `at+jwt`
+setting.
+
+`OIDC_TYPED_ACCESS_TOKENS=false` is for a provider that does not type its access tokens.
+The audience check then refuses ID tokens, as long as the provider keeps the API's
+audience out of them, which OpenID Connect allows but does not require. Zitadel, the
+reference IdP, fails both: every token it signs is typed `JWT`, and its ID tokens carry
+the project ID, the audience the API checks, so a Zitadel ID token used to get through
+`/me`. Moving the API to a project of its own does not help, since Zitadel puts an
+audience requested by scope in the ID token too.
+
+So in that mode the verifier also refuses a token carrying `nonce`, `at_hash` or
+`c_hash`, the claims OpenID Connect defines for ID tokens only, or one explicitly typed
+as another kind of JWT (`logout+jwt`, say). That is not the standard, since those claims
+are optional, and it holds only because of how Zitadel issues ID tokens: it puts
+`at_hash` in every ID token it issues alongside an access token, which covers the code
+and refresh grants, the only ones the project's clients get. Token exchange can mint an
+ID token with neither marker, so no client of the project gets that grant; and the admin
+sends a `nonce` anyway. The development setup runs in this mode. If Zitadel comes to
+type its access tokens, the mode goes; introspection would tell the kinds apart with any
+provider, at the cost of the provider in every request.
+
 ## Alternatives considered (for the maintainer's own deployment)
 
 - Keycloak: most featureful, 1-2GB+ JVM — too heavy for cheap servers.
