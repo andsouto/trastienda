@@ -8,13 +8,26 @@ processes:
   infra:
     # --wait counts any exited container as a failure, exit code 0 included
     # (docker/compose#10596): no one-shot services in docker-compose.yaml.
-    command: docker compose up -d --wait
+    # Then it follows the containers' logs, which keeps the process alive so
+    # that stopping process-compose stops the containers too.
+    command: docker compose up -d --wait && echo 'infra is up' && docker compose logs --follow --tail 0
+    ready_log_line: infra is up
+    shutdown:
+      command: docker compose stop
+
+  idp:
+    # Creates or updates the project and the admin's OIDC client in Zitadel,
+    # and writes the admin's runtime config (apps/admin/public/config.json).
+    command: pnpm --filter @trastienda/api provision:idp
+    depends_on:
+      infra:
+        condition: process_log_ready
 
   api:
     command: pnpm --filter @trastienda/api dev
     depends_on:
       infra:
-        condition: process_completed_successfully
+        condition: process_log_ready
     environment:
       # Inspector on 127.0.0.1:9229, for the "Attach to API" launch in .vscode.
       # Only the --watch child binds it; pnpm and the watcher parent do not.
@@ -27,9 +40,12 @@ processes:
       period_seconds: 2
 
   admin:
-    # Needs nothing from compose: ng serve serves static files, the browser
-    # talks to the api and the IdP directly.
+    # Needs nothing from compose but the config idp writes: ng serve serves
+    # static files, the browser talks to the api and the IdP directly.
     command: pnpm --filter @trastienda/admin dev
+    depends_on:
+      idp:
+        condition: process_completed_successfully
     readiness_probe:
       http_get:
         host: localhost
