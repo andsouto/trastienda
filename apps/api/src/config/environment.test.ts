@@ -4,7 +4,7 @@ import { loadEnvironment } from './environment.ts';
 
 const valid = {
   DATABASE_URL: 'postgresql://localhost:5432/trastienda',
-  OIDC_AUDIENCE: 'trastienda-api',
+  OIDC_AUDIENCE: 'trastienda',
   OIDC_ISSUER_URL: 'http://localhost:8080',
 };
 
