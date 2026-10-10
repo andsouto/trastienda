@@ -5,7 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { createTokenVerifier } from './oidc.ts';
 
-const AUDIENCE = 'trastienda-api';
+const AUDIENCE = 'trastienda';
 const KEY_ID = 'test-key';
 
 const trusted = await generateKeyPair('RS256', { extractable: true });

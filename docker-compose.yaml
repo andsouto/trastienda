@@ -66,6 +66,13 @@ services:
       - '8080:80'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    # Healthy once it routes to Zitadel, not merely once it listens: the idp
+    # process of process-compose calls Zitadel through it straight away.
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://localhost/.well-known/openid-configuration']
+      interval: 2s
+      timeout: 5s
+      retries: 15
     depends_on:
       zitadel-api:
         condition: service_healthy
@@ -91,6 +98,17 @@ services:
       ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_USERNAME: login-client
       ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_NAME: Automatically Initialized IAM_LOGIN_CLIENT
       ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_PAT_EXPIRATIONDATE: '2099-01-01T00:00:00Z'
+      # Service account (instance owner) whose token the `idp` process of
+      # process-compose uses to set Zitadel up: apps/api/scripts/provision-idp.ts.
+      ZITADEL_FIRSTINSTANCE_PATPATH: /zitadel/bootstrap/provisioner.pat
+      ZITADEL_FIRSTINSTANCE_ORG_MACHINE_MACHINE_USERNAME: provisioner
+      ZITADEL_FIRSTINSTANCE_ORG_MACHINE_MACHINE_NAME: Provisioner for process-compose
+      ZITADEL_FIRSTINSTANCE_ORG_MACHINE_PAT_EXPIRATIONDATE: '2099-01-01T00:00:00Z'
+
+      # Short-lived access tokens, as a real deployment would want, so the
+      # admin refreshes its token often enough to try it by hand. Like
+      # FirstInstance, applied on first start only.
+      ZITADEL_DEFAULTINSTANCE_OIDCSETTINGS_ACCESSTOKENLIFETIME: 5m
 
       ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_REQUIRED: true
       ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_BASEURI: http://localhost:8080/ui/v2/login/
