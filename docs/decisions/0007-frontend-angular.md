@@ -50,6 +50,11 @@ contact:** the emitted `*.resource.ts` did not compile under
 regression guard that typechecks the generated samples under the flag — so the risk
 is real, and covered where it should be.
 
+### Runtime configuration
+
+The admin reads its deployment's settings (API base URL, issuer, client ID) from
+`config.json` before it starts, since a published build cannot know them.
+
 ### Origins: the admin calls the API cross-origin
 
 The identity provider, the API and the admin each live on their own origin, and the API

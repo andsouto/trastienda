@@ -28,6 +28,43 @@ a browser too — which the offline till of ADR-0014 needs for chain hashing.
 `request.jwtVerify()` sugar over a hook we own anyway, and couples verification to
 Fastify, so the verifier stops being a plain function testable without a web framework.
 
+## The admin's client
+
+The admin logs in with the authorization code flow and PKCE as a public client, through
+`oauth4webapi` (zero dependencies, by the author of `jose`, OpenID certified as a relying
+party), which does the protocol; the redirects, renewal and logout are the admin's own.
+
+- **`angular-auth-oidc-client`**: slow to merge fixes, certified only for the implicit
+  and config profiles, and its guard, interceptor and silent renew are parts we would
+  replace.
+- **`angular-oauth2-oidc`**: barely maintained, slow to support new Angular versions,
+  and coordinates nothing across tabs.
+
+A `SharedWorker` owns the session for every tab: it does every token exchange, renewal
+and revocation, and the refresh token never leaves its memory; tabs get an access token
+for each API request. One owner means one renewal for all tabs, since a refresh token is
+single use, and a logout ends every tab's session. Against a script injected into the
+page it is neither better nor worse: that script can ask for a token as the app does.
+
+- **Per-tab sessions in `sessionStorage`**: two tabs renewing with one refresh token, as
+  a duplicated tab does, leave one of them logged out.
+- **`localStorage`** with a lock around renewal: the refresh token would outlive closing
+  the browser.
+- **`BroadcastChannel` over per-tab copies**: copies to keep in step, where one owner has
+  nothing to synchronise.
+- **A service worker**: stopped when idle, taking the tokens with it unless they go to
+  disk.
+- **The worker also making the API's requests**, so no tab sees the access token: an
+  injected script could still have the worker make them, and it takes a transport of
+  our own under Angular's `HttpClient`. DPoP is what makes a stolen token useless.
+
+Zitadel issues refresh tokens only for `offline_access`, and they outlive its session:
+ending it leaves them working, and only their holder can revoke them
+([zitadel#12637](https://github.com/zitadel/zitadel/issues/12637)). So logout revokes
+the refresh token (RFC 7009) before ending the provider's session. One left behind by
+closing every tab without logging out lives until it expires, so a deployment keeps its
+lifetime short too.
+
 ## Telling access tokens from ID tokens
 
 An issuer signs ID tokens with the same keys as access tokens, and RFC 8725 requires
