@@ -27,6 +27,23 @@ a browser too — which the offline till of ADR-0014 needs for chain hashing.
 `request.jwtVerify()` sugar over a hook we own anyway, and couples verification to
 Fastify, so the verifier stops being a plain function testable without a web framework.
 
+## The admin's client: oauth4webapi
+
+The admin logs in with the authorization code flow and PKCE as a public client, through
+`oauth4webapi` (MIT, zero dependencies, by the author of `jose`, OpenID certified as a
+relying party). It does the protocol and its validations; what is left is the admin's
+own, in `core/auth/`: the redirects, the tokens in `sessionStorage`, renewal
+with the refresh token shortly before the access token expires (one renewal shared by
+concurrent requests, since a refresh token is single use), and logout. The token goes on
+API requests from an interceptor, which ADR-0007 requires anyway. The user's name and
+email come from the userinfo endpoint at login: with an access token issued, OpenID
+Connect keeps them out of the ID token, so Zitadel's option to put them there is off.
+
+`angular-auth-oidc-client` was the alternative: Angular-native and quicker to wire, but
+fixes from its own contributors sit unmerged for months, its OpenID certification covers
+only the implicit and config profiles, and its guard, interceptor and iframe-based silent
+renew are parts we would replace or not use.
+
 ## Telling access tokens from ID tokens
 
 An issuer signs ID tokens with the same keys as access tokens, and RFC 8725 §3.12

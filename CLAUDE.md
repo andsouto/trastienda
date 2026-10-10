@@ -34,11 +34,13 @@ without new evidence.
   `httpResource` helpers (`*.resource.ts`) for reads, injectable services for writes.
   Renovate's orval bumps go red on the codegen-drift check whenever the emitted output
   changes (it cannot run `pnpm codegen`): bump by hand and commit the regenerated
-  client.
+  client. The admin reads `public/config.json` (API base URL, issuer, client ID) before
+  it starts; it is gitignored, and process-compose's idp process writes it.
 - **Auth**: the API is a provider-agnostic OIDC resource server; Zitadel is the
   reference IdP in compose at http://localhost:8080 (ADR-0008). Tests use a fake JWKS.
   Access tokens must be typed `at+jwt` (RFC 9068) unless `OIDC_TYPED_ACCESS_TOKENS=false`,
-  which Zitadel needs and `.env.example` sets.
+  which Zitadel needs and `.env.example` sets. The admin logs in with `oauth4webapi`
+  (code flow + PKCE, `core/auth/`), and the API answers CORS for `CORS_ORIGINS`.
 - **Repo**: pnpm-workspaces monorepo — `apps/api`, `apps/admin` (ADR-0001). No task
   orchestrator yet (add Turborepo when CI hurts).
 - **CI/CD** (ADR-0009): GitHub Actions; `main` only takes rebase merges through a PR,

@@ -24,8 +24,9 @@ process-compose up      # everything, one TUI: Postgres 18, MinIO, Zitadel (:808
                         # through docker compose, then api (:3000) and admin (:4200)
 ```
 
-Zitadel's console is at http://localhost:8080/ui/console (`zitadel-admin@zitadel.localhost`
-/ `Password1!`). Stopping process-compose stops the containers too.
+The admin at http://localhost:4200 and Zitadel's console at
+http://localhost:8080/ui/console share a first login: `zitadel-admin@zitadel.localhost` /
+`Password1!`. Stopping process-compose stops the containers too.
 
 Each process is one pnpm script, so they also run on their own:
 

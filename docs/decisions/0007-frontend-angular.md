@@ -50,6 +50,15 @@ contact:** the emitted `*.resource.ts` did not compile under
 regression guard that typechecks the generated samples under the flag — so the risk
 is real, and covered where it should be.
 
+### Runtime configuration
+
+The admin reads `config.json`, next to `index.html`, before it starts: the API's base
+URL, the issuer and its OIDC client ID. A published build cannot know a deployment's
+identity provider or where its API lives, so they cannot be baked in at build time. It
+costs one small request, preloaded from `index.html` so it downloads alongside the
+bundle. In development, process-compose's idp process writes it. The generated client
+emits paths like `/me`, and an interceptor sends every relative URL to `apiBaseUrl`.
+
 ### Origins: the admin calls the API cross-origin
 
 The identity provider, the API and the admin each live on their own origin, as a real
