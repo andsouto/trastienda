@@ -1,5 +1,22 @@
-import { type Static, Type } from 'typebox';
+import { type StaticDecode, Type } from 'typebox';
 import { DecodeError, Value } from 'typebox/value';
+
+/**
+ * Comma-separated in the environment, a list once parsed; empty means no CORS
+ * headers at all. `Type.Array` would not split it: parsing wraps the whole
+ * string as the list's only entry.
+ */
+const Origins = Type.Codec(Type.String({ default: '' }))
+  .Decode((value) => {
+    const origins = value.split(',').map(origin => origin.trim()).filter(origin => origin !== '');
+
+    for (const origin of origins) {
+      requireOrigin(origin);
+    }
+
+    return origins;
+  })
+  .Encode(origins => origins.join(','));
 
 const EnvironmentSchema = Type.Object({
   PORT: Type.Number({ default: 3000 }),
@@ -16,6 +33,7 @@ const EnvironmentSchema = Type.Object({
     { default: 'info' },
   ),
   API_DOCS: Type.Boolean({ default: false }),
+  CORS_ORIGINS: Origins,
   DATABASE_URL: Type.String(),
   OIDC_ISSUER_URL: Type.String(),
   OIDC_AUDIENCE: Type.String({ minLength: 1 }),
@@ -24,7 +42,7 @@ const EnvironmentSchema = Type.Object({
   OIDC_TYPED_ACCESS_TOKENS: Type.Boolean({ default: true }),
 });
 
-export type Environment = Static<typeof EnvironmentSchema>;
+export type Environment = StaticDecode<typeof EnvironmentSchema>;
 
 /**
  * Not a schema `format`: TypeBox's `uri` and `url` take any scheme, so they
@@ -42,6 +60,18 @@ function requireHttpUrl(name: string, value: string): void {
 
   if (protocol !== 'http:' && protocol !== 'https:') {
     throw new TypeError(`${name} must be an http(s) URL, got ${protocol}`);
+  }
+}
+
+/**
+ * Browsers send an origin as scheme, host and port, with no path or trailing
+ * slash, and CORS compares it as a string: anything else would never match.
+ */
+function requireOrigin(origin: string): void {
+  requireHttpUrl('CORS_ORIGINS', origin);
+
+  if (new URL(origin).origin !== origin) {
+    throw new TypeError(`CORS_ORIGINS entries are origins, like http://localhost:4200; got ${JSON.stringify(origin)}`);
   }
 }
 

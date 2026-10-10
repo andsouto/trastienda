@@ -7,6 +7,7 @@ const environment = loadEnvironment();
 
 const app = await buildApp({
   apiReference: environment.API_DOCS,
+  corsOrigins: environment.CORS_ORIGINS,
   logger: { level: environment.LOG_LEVEL },
   verifyToken: createTokenVerifier({
     audience: environment.OIDC_AUDIENCE,
