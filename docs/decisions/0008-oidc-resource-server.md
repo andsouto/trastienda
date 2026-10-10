@@ -28,6 +28,20 @@ a browser too — which the offline till of ADR-0014 needs for chain hashing.
 `request.jwtVerify()` sugar over a hook we own anyway, and couples verification to
 Fastify, so the verifier stops being a plain function testable without a web framework.
 
+## Tokens verified locally
+
+The API verifies access tokens against the cached JWKS, with no call to the provider per
+request, so a revoked or leaked token stays valid until it expires: a deployment keeps
+access tokens short and renews them with the refresh token.
+
+- **Opaque tokens and introspection**: revocation at once, but the provider sits in every
+  request, its outage is the API's, and caching its answers brings the window back.
+- **A backend-for-frontend** holding the tokens server side: the most secure option for
+  browser apps, but a stateful component at odds with a till that sells offline. It can
+  be put in front later without changing the API.
+- **Sender-constrained tokens (DPoP)** would make a stolen token useless; Zitadel does
+  not offer them.
+
 ## The admin's client
 
 The admin logs in with the authorization code flow and PKCE as a public client, through
