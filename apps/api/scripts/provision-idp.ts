@@ -35,8 +35,11 @@ if (await zitadel('project.v2.ProjectService/GetProject', { projectId }) === nul
 
 // 2. The admin's OIDC client: public (it runs in the browser, so it cannot
 // keep a secret), code flow with PKCE, refresh tokens, and access tokens as
-// JWT, which is all the API verifies. Development mode is what lets
-// Zitadel accept http:// redirect URIs.
+// JWT, which is all the API verifies. Only the code and refresh
+// grants: Zitadel then puts at_hash in every ID token this client gets, which
+// is how the API refuses them while Zitadel types no access token at+jwt,
+// whereas token exchange can mint ID tokens with no at_hash at all.
+// Development mode is what lets Zitadel accept http:// redirect URIs.
 const adminApp = { applicationId: 'admin', projectId };
 const oidcConfig = {
   accessTokenType: 'OIDC_TOKEN_TYPE_JWT',

@@ -37,6 +37,8 @@ without new evidence.
   client.
 - **Auth**: the API is a provider-agnostic OIDC resource server; Zitadel is the
   reference IdP in compose at http://localhost:8080 (ADR-0008). Tests use a fake JWKS.
+  Access tokens must be typed `at+jwt` (RFC 9068) unless `OIDC_TYPED_ACCESS_TOKENS=false`,
+  which Zitadel needs and `.env.example` sets.
 - **Repo**: pnpm-workspaces monorepo — `apps/api`, `apps/admin` (ADR-0001). No task
   orchestrator yet (add Turborepo when CI hurts).
 - **CI/CD** (ADR-0009): GitHub Actions; `main` only takes rebase merges through a PR,
