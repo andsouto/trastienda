@@ -1,0 +1,6 @@
+@if (error(); as message) {
+  <p role="alert">Could not log in: {{ message }}</p>
+  <button type="button" (click)="retry()">Try again</button>
+} @else {
+  <p>Logging in…</p>
+}

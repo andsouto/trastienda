@@ -16,23 +16,35 @@ its code links its design in [design/](design/), which goes when the block lands
 
 Done: the OIDC resource server of ADR-0008, first and before the endpoints it protects,
 so that the first route ever written already has its final shape rather than being
-rewritten once authentication shows up.
+rewritten once authentication shows up. Then the admin's login against the local
+Zitadel, provisioned by `process-compose up` so anyone's stack logs in as it starts,
+with the token added by an interceptor that composes over orval's `httpResource`
+helpers.
 
 Left:
 
+- First, the session worker letting go of closed tabs: `serveSession` subscribes each
+  tab that connects to the session's changes and nothing unsubscribes it, so every
+  reload leaves a listener posting to a dead port until the worker ends. A port does
+  not say when its other end closes, so the tab has to say goodbye, on `pagehide`, and
+  say hello again when the back/forward cache brings it back.
+- An error page for the admin's start and login. A `config.json` that does not load, a
+  provider the guard or the logged-out page cannot reach, and a session worker that
+  cannot build its owner each leave a blank page or a button that does nothing. One
+  page that says what failed and offers a retry, with the worker telling the tabs when
+  it fails.
 - The shared kernel (`Money`, `TaxRate`), whose `eslint-plugin-boundaries` exception is
   already in place, and the `bridges/` rules of ADR-0013 — the first time that
   architecture becomes executable config rather than a document.
 - Business configuration: tax regime, seeded and editable rates.
 - Reference data: scales and palettes by seed, no management UI.
-- With the first real endpoint, confirming that interceptors compose as expected over
-  the services orval generates (ADR-0007): decided on paper, confirmed on contact.
-- Admin login against the reference IdP: a public OIDC app with PKCE in the local
-  Zitadel, provisioned by `process-compose up` rather than clicked in its console, so
-  anyone's stack logs in as it starts. Catalog's first screen needs it. The API
-  reference at `/docs` reuses the same app for its Authorize, with its own redirect
-  URI; the committed contract keeps only `bearerAuth`, and the OAuth scheme goes only
-  into the spec served to the reference.
+- With the first write endpoint, confirming that interceptors compose as expected over
+  the injectable services orval generates for writes, as they already do over its
+  `httpResource` helpers for reads (ADR-0007).
+- The API reference at `/docs` logs in through the admin's OIDC client for its
+  Authorize, with its own redirect URI added by the idp process; the committed contract
+  keeps only `bearerAuth`, and the OAuth scheme goes only into the spec served to the
+  reference.
 - With the second integration test file, one Postgres for all of them, started by the
   api's Vitest `globalSetup`, which uses a database URL from outside when it gets one.
   Root `pnpm test` then starts that environment first, runs the admin's and the api's

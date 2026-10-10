@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "ng test --watch=false",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.spec.json && tsc --noEmit -p tsconfig.worker.json",
     "codegen": "orval"
   },
   "dependencies": {
@@ -21,6 +22,7 @@
     "@angular/forms": "22.2.3",
     "@angular/platform-browser": "22.2.3",
     "@angular/router": "22.2.3",
+    "oauth4webapi": "3.8.8",
     "rxjs": "7.8.2",
     "tslib": "2.8.1"
   },
