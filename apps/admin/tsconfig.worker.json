@@ -1,0 +1,10 @@
+/* The session's shared worker: no DOM, and Angular builds it on its own (webWorkerTsConfig). */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/worker",
+    "lib": ["es2024", "webworker"],
+    "types": []
+  },
+  "include": ["src/**/*.worker.ts"]
+}

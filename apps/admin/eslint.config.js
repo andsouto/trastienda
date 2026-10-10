@@ -16,6 +16,17 @@ export default defineConfig(
     rules: {
       '@angular-eslint/directive-selector': ['error', {type: 'attribute', prefix: 'app', style: 'camelCase'}],
       '@angular-eslint/component-selector': ['error', {type: 'element', prefix: 'app', style: 'kebab-case'}],
+      '@typescript-eslint/no-extraneous-class': ['error', {allowWithDecorator: true}],
+    },
+  },
+  {
+    // oauth4webapi marks allowInsecureRequests deprecated only so that it stands
+    // out; the session owner sets it for a provider on http://localhost alone.
+    files: ['src/app/core/auth/session/session-owner.ts'],
+    rules: {
+      '@typescript-eslint/no-deprecated': ['error', {
+        allow: [{from: 'package', name: 'allowInsecureRequests', package: 'oauth4webapi'}],
+      }],
     },
   },
   {

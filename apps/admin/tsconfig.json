@@ -8,6 +8,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
+    "lib": ["es2024", "dom"],
     "module": "preserve"
   },
   "angularCompilerOptions": {
@@ -22,6 +23,9 @@
     },
     {
       "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "./tsconfig.worker.json"
     }
   ]
 }
