@@ -1,3 +1,4 @@
+import cors from '@fastify/cors';
 import swagger from '@fastify/swagger';
 import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { fastify, type FastifyServerOptions } from 'fastify';
@@ -13,6 +14,11 @@ export interface AppOptions {
    * Serves the API reference at `/docs`. Development only: see `plugins/api-reference.ts`.
    */
   apiReference?: boolean;
+
+  /**
+   * Browser origins allowed to call the API from another origin, such as the admin's.
+   */
+  corsOrigins?: string[];
   logger?: FastifyServerOptions['logger'];
   verifyToken: VerifyToken;
 }
@@ -29,6 +35,16 @@ export async function buildApp(options: AppOptions) {
   }).withTypeProvider<TypeBoxTypeProvider>();
 
   installAuth(app);
+
+  // Unless told, @fastify/cors lets the browser send only GET, HEAD and POST.
+  // Chromium keeps a preflight for two hours at most.
+  if (options.corsOrigins?.length) {
+    app.register(cors, {
+      maxAge: 7200,
+      methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
+      origin: options.corsOrigins,
+    });
+  }
 
   app.register(swagger, {
     openapi: {
