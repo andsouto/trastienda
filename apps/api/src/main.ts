@@ -11,6 +11,7 @@ const app = await buildApp({
   verifyToken: createTokenVerifier({
     audience: environment.OIDC_AUDIENCE,
     issuer: environment.OIDC_ISSUER_URL,
+    typedAccessTokens: environment.OIDC_TYPED_ACCESS_TOKENS,
   }),
 });
 

@@ -19,6 +19,9 @@ const EnvironmentSchema = Type.Object({
   DATABASE_URL: Type.String(),
   OIDC_ISSUER_URL: Type.String(),
   OIDC_AUDIENCE: Type.String({ minLength: 1 }),
+  // RFC 9068's at+jwt is required of access tokens unless this is false, for a
+  // provider that does not type them (Zitadel).
+  OIDC_TYPED_ACCESS_TOKENS: Type.Boolean({ default: true }),
 });
 
 export type Environment = Static<typeof EnvironmentSchema>;

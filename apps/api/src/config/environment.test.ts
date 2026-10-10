@@ -15,10 +15,16 @@ it('applies defaults for what is optional', () => {
   expect(environment.LOG_LEVEL).toBe('info');
   // Off unless asked for: what a production deployment gets.
   expect(environment.API_DOCS).toBe(false);
+  // The standard unless the provider cannot do it.
+  expect(environment.OIDC_TYPED_ACCESS_TOKENS).toBe(true);
 });
 
 it('reads API_DOCS from its string form', () => {
   expect(loadEnvironment({ ...valid, API_DOCS: 'true' }).API_DOCS).toBe(true);
+});
+
+it('reads OIDC_TYPED_ACCESS_TOKENS from its string form', () => {
+  expect(loadEnvironment({ ...valid, OIDC_TYPED_ACCESS_TOKENS: 'false' }).OIDC_TYPED_ACCESS_TOKENS).toBe(false);
 });
 
 it('says what is wrong without repeating the values', () => {
