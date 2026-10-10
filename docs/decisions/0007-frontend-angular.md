@@ -50,6 +50,19 @@ contact:** the emitted `*.resource.ts` did not compile under
 regression guard that typechecks the generated samples under the flag — so the risk
 is real, and covered where it should be.
 
+### Origins: the admin calls the API cross-origin
+
+The identity provider, the API and the admin each live on their own origin, as a real
+deployment usually has them, and the API answers CORS for the origins listed in
+`CORS_ORIGINS` (none by default, so a deployment serving both from one origin needs
+nothing). The future shop forces CORS on the API anyway if it calls from the browser, and
+putting the admin behind the API's origin would make every deployment run a reverse proxy
+with path routing. The API sets the headers itself rather than leaving them to a proxy:
+there is no proxy in development, every proxy would need its own config in each
+deployment artifact, and headers set in both places break, since a browser rejects a
+duplicated `Access-Control-Allow-Origin`. The cost is a preflight per distinct URL and
+method, because `Authorization` is not a CORS-safelisted header, cached for two hours.
+
 ## Alternatives rejected
 
 - **Angular Material**: the smallest component set of the UI libraries measured and a
