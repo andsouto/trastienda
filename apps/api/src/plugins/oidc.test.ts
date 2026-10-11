@@ -70,6 +70,7 @@ interface TokenOptions {
   expiresIn?: string;
   issuer: string;
   key?: CryptoKey;
+  notBefore?: string;
   subject?: string | null;
 
   /**
@@ -89,6 +90,10 @@ async function signToken(options: TokenOptions): Promise<string> {
 
   if (options.subject !== null) {
     token.setSubject(options.subject ?? 'user-42');
+  }
+
+  if (options.notBefore !== undefined) {
+    token.setNotBefore(options.notBefore);
   }
 
   return token.sign(options.key ?? trusted.privateKey);
@@ -113,6 +118,12 @@ describe('against a healthy provider', () => {
     await expect(verifier()(await token({ subject: 'user-9' }))).resolves.toEqual({ subject: 'user-9' });
   });
 
+  // A provider whose clock runs ahead of the API's issues tokens that, by the
+  // API's clock, are not valid yet.
+  it('accepts a token not valid for a few seconds yet', async () => {
+    await expect(verifier()(await token({ notBefore: '10s' }))).resolves.toEqual({ subject: 'user-42' });
+  });
+
   it('discovers the JWKS once per verifier, however many tokens it checks', async () => {
     const verify = verifier();
     const before = idp.discoveryRequests.length;
@@ -125,6 +136,7 @@ describe('against a healthy provider', () => {
 
   it.each<[string, Partial<TokenOptions>]>([
     ['is expired', { expiresIn: '-1m' }],
+    ['is not valid for minutes yet', { notBefore: '2m' }],
     ['was issued for another audience', { audience: 'someone-else' }],
     ['names another issuer', { issuer: 'https://evil.example.test' }],
     ['is signed by a key that is not in the JWKS', { key: stranger.privateKey }],
