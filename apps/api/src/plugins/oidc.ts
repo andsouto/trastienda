@@ -22,6 +22,13 @@ const SIGNING_ALGORITHMS = [
 ];
 
 /**
+ * Zitadel sets `nbf` to the moment it issues a token, so an API whose clock
+ * runs a second behind the provider's would refuse a token just issued. A
+ * margin absorbs the skew between servers, and stretches `exp` as much.
+ */
+const CLOCK_TOLERANCE = '30s';
+
+/**
  * Claims OpenID Connect defines for ID tokens only. `auth_time`, `azp` and
  * `sid` are not on the list: some providers put them in access tokens too.
  */
@@ -64,6 +71,7 @@ export function createTokenVerifier(options: TokenVerifierOptions): VerifyToken 
     const { payload, protectedHeader } = await jwtVerify(token, await resolveKeys(), {
       algorithms: SIGNING_ALGORITHMS,
       audience: options.audience,
+      clockTolerance: CLOCK_TOLERANCE,
       issuer: options.issuer,
     });
 
