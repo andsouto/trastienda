@@ -1,5 +1,5 @@
 import { type FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox';
-import { Type } from '@sinclair/typebox';
+import { Type } from 'typebox';
 
 /**
  * Who the bearer token says you are. The admin calls it after login; it also

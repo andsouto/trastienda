@@ -1,5 +1,5 @@
-import { type Static, Type } from '@sinclair/typebox';
-import { Value } from '@sinclair/typebox/value';
+import { type Static, Type } from 'typebox';
+import { DecodeError, Value } from 'typebox/value';
 
 const EnvironmentSchema = Type.Object({
   PORT: Type.Number({ default: 3000 }),
@@ -24,10 +24,9 @@ const EnvironmentSchema = Type.Object({
 export type Environment = Static<typeof EnvironmentSchema>;
 
 /**
- * Not a schema `format`: TypeBox's own checker fails every value under a format
- * it has not been taught, and teaching it means mutating a global registry at
- * import time. Fastify's route validation does know `uri` — it runs Ajv with
- * ajv-formats — but this file is checked with `Value.Parse`, which does not.
+ * Not a schema `format`: TypeBox's `uri` and `url` take any scheme, so they
+ * pass `ftp://…` and also `localhost:8080`, which parses with `localhost:` as
+ * its scheme — the typo this check exists to catch.
  */
 function requireHttpUrl(name: string, value: string): void {
   let protocol: string;
@@ -43,8 +42,31 @@ function requireHttpUrl(name: string, value: string): void {
   }
 }
 
+/**
+ * Names each problem and leaves the original error out, `cause` included:
+ * TypeBox's says only "Decode" and carries every value it checked, so left to
+ * crash the process it would print DATABASE_URL, password included, into
+ * whatever collects the logs.
+ */
+function invalidEnvironment(error: DecodeError): TypeError {
+  const problems = error.cause.errors.map(({ instancePath, message }) =>
+    instancePath === '' ? message : `${instancePath.slice(1)} ${message}`);
+
+  return new TypeError(`Invalid environment: ${problems.join('; ')}`);
+}
+
 export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Environment {
-  const environment = Value.Parse(EnvironmentSchema, { ...source });
+  let environment: Environment;
+
+  try {
+    environment = Value.Decode(EnvironmentSchema, { ...source });
+  } catch (error) {
+    if (error instanceof DecodeError) {
+      throw invalidEnvironment(error);
+    }
+
+    throw error;
+  }
 
   requireHttpUrl('OIDC_ISSUER_URL', environment.OIDC_ISSUER_URL);
 
