@@ -255,8 +255,8 @@ importers:
         specifier: 9.9.2
         version: 9.9.2(supports-color@8.1.1)
       '@fastify/type-provider-typebox':
-        specifier: 6.2.0
-        version: 6.2.0(ajv-formats@3.0.1)(typebox@1.3.36)
+        specifier: 6.3.0
+        version: 6.3.0(ajv-formats@3.0.1)(typebox@1.3.36)
       '@prisma/adapter-pg':
         specifier: 7.10.0
         version: 7.10.0
@@ -863,8 +863,8 @@ packages:
   '@fastify/swagger@9.9.2':
     resolution: {integrity: sha512-ayxItVgf/1axBvw33lqsA5ns02YMpT1r59G/HCJraRNWWBzvLgN+oiCBPhuzTiN67TvctlCYkG0+40WLKYuusQ==}
 
-  '@fastify/type-provider-typebox@6.2.0':
-    resolution: {integrity: sha512-atChgjMPHqP/1WphOlN5tMt3qOpolDyedbdDIw91wIoZxku3x1p+bqLKqhXNoaTFX2tqT56LeuIKYH5BDutDFA==}
+  '@fastify/type-provider-typebox@6.3.0':
+    resolution: {integrity: sha512-zsaoyyAdNvkuf2HOMJvf7vykRTFA/1M9J3HC0vHNtFhxNhwL36iDJl/2Tpl0XzMR0f0aATSeDV20ChH720wXYQ==}
     peerDependencies:
       ajv-formats: ^3.0.1
       typebox: ^1.1.14
@@ -5143,7 +5143,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@fastify/type-provider-typebox@6.2.0(ajv-formats@3.0.1)(typebox@1.3.36)':
+  '@fastify/type-provider-typebox@6.3.0(ajv-formats@3.0.1)(typebox@1.3.36)':
     dependencies:
       ajv-formats: 3.0.1
       typebox: 1.3.36
