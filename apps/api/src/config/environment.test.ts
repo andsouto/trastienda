@@ -21,6 +21,16 @@ it('reads API_DOCS from its string form', () => {
   expect(loadEnvironment({ ...valid, API_DOCS: 'true' }).API_DOCS).toBe(true);
 });
 
+it('says what is wrong without repeating the values', () => {
+  const source = {
+    ...valid,
+    DATABASE_URL: 'postgresql://trastienda:secret@localhost:5432/trastienda',
+    PORT: 'many',
+  };
+
+  expect(() => loadEnvironment(source)).toThrow(new TypeError('Invalid environment: PORT must be number'));
+});
+
 it.each([
   ['a missing issuer', { ...valid, OIDC_ISSUER_URL: undefined }],
   ['an empty issuer', { ...valid, OIDC_ISSUER_URL: '' }],

@@ -1,5 +1,5 @@
 import { type FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox';
-import { Type } from '@sinclair/typebox';
+import { Type } from 'typebox';
 
 const HealthResponse = Type.Object({
   status: Type.Literal('ok'),
