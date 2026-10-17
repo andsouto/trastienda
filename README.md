@@ -19,6 +19,7 @@ Requirements: [mise](https://mise.jdx.dev) and Docker. mise pins node, pnpm and
 ```sh
 mise install
 pnpm install
+pnpm --filter @trastienda/admin exec playwright install --only-shell chromium   # for the admin's tests
 cp .env.example .env
 process-compose up      # everything, one TUI: Postgres 18, MinIO, Zitadel (:8080)
                         # through docker compose, then api (:3000) and admin (:4200)
@@ -45,7 +46,7 @@ Everyday commands, from the repo root:
 pnpm lint         # ESLint (owns TS; layering rules included)
 pnpm format       # Prettier (owns html/scss/json/yaml)
 pnpm typecheck
-pnpm test         # unit + integration (Testcontainers)
+pnpm test         # unit + integration (Testcontainers); the admin's in headless Chromium
 pnpm build
 pnpm codegen      # regenerate openapi.json + the admin client, commit the result
 ```
