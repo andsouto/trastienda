@@ -26,7 +26,10 @@ without new evidence.
   committed; `pnpm codegen` regenerates, CI fails on drift. `API_DOCS=true` (set in
   `.env.example`) serves Scalar over the live spec at `/docs`; it is a devDependency,
   so it never ships.
-- **Frontend**: Angular 22 (standalone, signals, zoneless), Vitest via `ng test`.
+- **Frontend**: Angular 22 (standalone, signals, zoneless), Vitest via `ng test` in
+  headless Chromium through Playwright, so tests run against the browser's own APIs
+  (WebCrypto, workers; install it once:
+  `pnpm --filter @trastienda/admin exec playwright install --only-shell chromium`).
   Resource APIs (`resource`/`rxResource`/`httpResource`) are stable in v22 and are the
   intended data-fetching path. orval emits the API client into
   `apps/admin/src/app/core/api/` (`apps/admin/orval.config.ts`); auth, retries and the
@@ -81,7 +84,10 @@ without new evidence.
 ## Commands
 
 - `pnpm lint` / `lint:fix`, `pnpm format:check` / `format`, `pnpm typecheck`,
-  `pnpm test`, `pnpm build` — all from root.
+  `pnpm test`, `pnpm build` — all from root. `pnpm test` runs one app at a time: the
+  admin's Chromium tests stall when a container starts beside them, as the api's
+  Testcontainers do
+  ([angular/angular-cli#34390](https://github.com/angular/angular-cli/issues/34390)).
 - `pnpm codegen` — regenerate `openapi.json` + the admin's orval client (run after any
   route/schema change and commit the result).
 - `process-compose up` — the whole local stack in one TUI: `docker compose up -d --wait`

@@ -33,6 +33,12 @@ Left:
   reference at `/docs` reuses the same app for its Authorize, with its own redirect
   URI; the committed contract keeps only `bearerAuth`, and the OAuth scheme goes only
   into the spec served to the reference.
+- With the second integration test file, one Postgres for all of them, started by the
+  api's Vitest `globalSetup`, which uses a database URL from outside when it gets one.
+  Root `pnpm test` then starts that environment first, runs the admin's and the api's
+  tests in parallel, and stops it after both. Today it runs one app at a time because
+  the admin's browser tests stall when a container starts or stops beside them
+  ([vitest#11636](https://github.com/vitest-dev/vitest/issues/11636)).
 
 ## 2. Catalog
 

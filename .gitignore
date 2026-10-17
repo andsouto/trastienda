@@ -6,6 +6,8 @@ dist/
 .angular/
 coverage/
 out-tsc/
+# failure screenshots from Vitest's browser mode
+.vitest/
 *.tsbuildinfo
 
 # generated code (regenerable, except the committed contract artifacts)
