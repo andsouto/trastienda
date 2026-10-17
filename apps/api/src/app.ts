@@ -1,3 +1,4 @@
+import cors from '@fastify/cors';
 import swagger from '@fastify/swagger';
 import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { fastify, type FastifyServerOptions } from 'fastify';
@@ -13,6 +14,10 @@ export interface AppOptions {
   Serves the API reference at `/docs`. Development only: see `plugins/api-reference.ts`.
   */
   apiReference?: boolean;
+  /**
+  Browser origins allowed to call the API from another origin, such as the admin's.
+  */
+  corsOrigins?: string[];
   logger?: FastifyServerOptions['logger'];
   verifyToken: VerifyToken;
 }
@@ -29,6 +34,12 @@ export async function buildApp(options: AppOptions) {
   }).withTypeProvider<TypeBoxTypeProvider>();
 
   installAuth(app);
+
+  // Bearer tokens, not cookies, so no credentials. A preflight is cached for
+  // two hours, which is as long as Chromium keeps one anyway.
+  if (options.corsOrigins !== undefined && options.corsOrigins.length > 0) {
+    app.register(cors, { maxAge: 7200, origin: options.corsOrigins });
+  }
 
   app.register(swagger, {
     openapi: {

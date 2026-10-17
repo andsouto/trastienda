@@ -16,6 +16,8 @@ export default defineConfig(
     rules: {
       '@angular-eslint/directive-selector': ['error', {type: 'attribute', prefix: 'app', style: 'camelCase'}],
       '@angular-eslint/component-selector': ['error', {type: 'element', prefix: 'app', style: 'kebab-case'}],
+      // A component's class is often empty: its template and decorator are the component.
+      '@typescript-eslint/no-extraneous-class': ['error', {allowWithDecorator: true}],
     },
   },
   {

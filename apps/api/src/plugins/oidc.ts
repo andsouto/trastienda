@@ -1,4 +1,10 @@
-import { createRemoteJWKSet, jwtVerify, type JWTVerifyGetKey } from 'jose';
+import {
+  createRemoteJWKSet,
+  type JWTHeaderParameters,
+  type JWTPayload,
+  jwtVerify,
+  type JWTVerifyGetKey,
+} from 'jose';
 
 import { type VerifyToken } from './auth.ts';
 
@@ -16,12 +22,36 @@ const SIGNING_ALGORITHMS = [
 ];
 
 /**
+ * Zitadel sets `nbf` to the moment it issues a token, so an API whose clock
+ * runs a second behind the provider's would refuse a token just issued. A
+ * margin absorbs the skew between servers, and stretches `exp` as much.
+ */
+const CLOCK_TOLERANCE = '30s';
+
+/**
+ * Claims OpenID Connect defines for ID tokens only. `auth_time`, `azp` and
+ * `sid` are not on the list: some providers put them in access tokens too.
+ */
+const ID_TOKEN_CLAIMS = ['nonce', 'at_hash', 'c_hash'];
+
+/**
  * Verifies bearer tokens against the issuer's published keys. The keys are
  * located through OIDC discovery on first use rather than at boot, so the API
  * can start before the identity provider is reachable; a failed discovery is
  * not cached.
  */
-export function createTokenVerifier(options: { audience: string; issuer: string }): VerifyToken {
+export interface TokenVerifierOptions {
+  audience: string;
+  issuer: string;
+  /**
+   * Whether the provider types its access tokens `at+jwt` (RFC 9068), which is
+   * then required of every token. See `requireAccessToken` for what happens
+   * without it.
+   */
+  typedAccessTokens: boolean;
+}
+
+export function createTokenVerifier(options: TokenVerifierOptions): VerifyToken {
   let keys: Promise<JWTVerifyGetKey> | undefined;
 
   const resolveKeys = async (): Promise<JWTVerifyGetKey> => {
@@ -38,11 +68,14 @@ export function createTokenVerifier(options: { audience: string; issuer: string 
   };
 
   return async (token) => {
-    const { payload } = await jwtVerify(token, await resolveKeys(), {
+    const { payload, protectedHeader } = await jwtVerify(token, await resolveKeys(), {
       algorithms: SIGNING_ALGORITHMS,
       audience: options.audience,
+      clockTolerance: CLOCK_TOLERANCE,
       issuer: options.issuer,
     });
+
+    requireAccessToken(protectedHeader, payload, options.typedAccessTokens);
 
     if (typeof payload.sub !== 'string' || payload.sub.length === 0) {
       throw new TypeError('token carries no subject');
@@ -50,6 +83,42 @@ export function createTokenVerifier(options: { audience: string; issuer: string 
 
     return { subject: payload.sub };
   };
+}
+
+/**
+ * An issuer signs ID tokens with the same keys as access tokens, and RFC 8725
+ * §3.12 requires telling them apart. The standard way is RFC 9068's: an access
+ * token is typed `at+jwt`, and a resource server refuses any other type.
+ *
+ * A provider that does not type its access tokens leaves the audience, which
+ * refuses an ID token as long as the provider keeps the API's audience out of
+ * it. Zitadel does not: its project, our audience, is in every token. So
+ * without typing, a token that carries an ID token's claims is refused too.
+ * OpenID Connect makes those claims optional, so that rests on Zitadel putting
+ * `at_hash` in every ID token it issues alongside an access token. ADR-0008.
+ */
+function requireAccessToken(header: JWTHeaderParameters, payload: JWTPayload, requiresTyping: boolean): void {
+  // Media types compare case-insensitively, and `application/` is optional.
+  const type = header.typ?.toLowerCase().replace(/^application\//, '');
+
+  if (requiresTyping) {
+    if (type !== 'at+jwt') {
+      throw new TypeError(`a token typed ${String(header.typ)} is not an RFC 9068 access token`);
+    }
+
+    return;
+  }
+
+  // A `typ` naming another kind of JWT (a `logout+jwt`, say) is no access token.
+  if (type !== undefined && type !== 'jwt' && type !== 'at+jwt') {
+    throw new TypeError(`a token typed ${String(header.typ)} is not an access token`);
+  }
+
+  const claim = ID_TOKEN_CLAIMS.find(name => Object.hasOwn(payload, name));
+
+  if (claim !== undefined) {
+    throw new TypeError(`token carries ${claim}: an ID token is not an access token`);
+  }
 }
 
 /**

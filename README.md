@@ -24,12 +24,17 @@ process-compose up      # everything, one TUI: Postgres 18, MinIO, Zitadel (:808
                         # through docker compose, then api (:3000) and admin (:4200)
 ```
 
+The admin at http://localhost:4200 and Zitadel's console at
+http://localhost:8080/ui/console share a first login: `zitadel-admin@zitadel.localhost` /
+`Password1!`. Stopping process-compose stops the containers too.
+
 Each process is one pnpm script, so they also run on their own:
 
 ```sh
-docker compose up -d                  # infra only
-pnpm --filter @trastienda/api dev     # API on http://localhost:3000
-pnpm --filter @trastienda/admin dev   # admin on http://localhost:4200
+docker compose up -d                          # infra only
+pnpm --filter @trastienda/api provision:idp   # Zitadel project + admin client
+pnpm --filter @trastienda/api dev             # API on http://localhost:3000
+pnpm --filter @trastienda/admin dev           # admin on http://localhost:4200
 ```
 
 The api process runs with the inspector on :9229; the "Attach to API" launch in

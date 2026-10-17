@@ -34,9 +34,13 @@ without new evidence.
   `httpResource` helpers (`*.resource.ts`) for reads, injectable services for writes.
   Renovate's orval bumps go red on the codegen-drift check whenever the emitted output
   changes (it cannot run `pnpm codegen`): bump by hand and commit the regenerated
-  client.
+  client. The admin reads `public/config.json` (API base URL, issuer, client ID) before
+  it starts; it is gitignored, and process-compose's idp process writes it.
 - **Auth**: the API is a provider-agnostic OIDC resource server; Zitadel is the
   reference IdP in compose at http://localhost:8080 (ADR-0008). Tests use a fake JWKS.
+  Access tokens must be typed `at+jwt` (RFC 9068) unless `OIDC_TYPED_ACCESS_TOKENS=false`,
+  which Zitadel needs and `.env.example` sets. The admin logs in with `oauth4webapi`
+  (code flow + PKCE, `core/auth/`), and the API answers CORS for `CORS_ORIGINS`.
 - **Repo**: pnpm-workspaces monorepo — `apps/api`, `apps/admin` (ADR-0001). No task
   orchestrator yet (add Turborepo when CI hurts).
 - **CI/CD** (ADR-0009): GitHub Actions; `main` only takes rebase merges through a PR,
@@ -84,10 +88,14 @@ without new evidence.
   route/schema change and commit the result).
 - `process-compose up` — the whole local stack in one TUI: `docker compose up -d --wait`
   (Postgres 18 :5432, MinIO :9000/:9001, Zitadel :8080, first login
-  `zitadel-admin@zitadel.localhost` / `Password1!`), then api (:3000, inspector on
-  :9229 for the `.vscode/` attach config) and admin (:4200). Each process is a pnpm
-  script, so `docker compose up -d` + `pnpm --filter @trastienda/<app> dev` still work
-  on their own. Needs `.env` (`cp .env.example .env`). process-compose's own settings
+  `zitadel-admin@zitadel.localhost` / `Password1!`), then idp
+  (`apps/api/scripts/provision-idp.ts`: creates or updates the Zitadel project and the
+  admin's OIDC client, and writes the admin's `public/config.json`), api (:3000,
+  inspector on :9229 for the `.vscode/` attach config) and admin (:4200). Stopping it
+  stops the containers too. Zitadel applies its compose settings on first start only:
+  after changing them, `docker compose down -v` (wipes all local data). Each process is
+  a pnpm script, so `docker compose up -d` + `pnpm --filter @trastienda/<app> dev`
+  still work on their own. Needs `.env` (`cp .env.example .env`). process-compose's own settings
   live in `.pc_env` (control API off :8080, no `.env` injection into processes — each
   one loads its own config), and the Docker file is named `docker-compose.yaml`
   because process-compose claims `compose.yaml` as its own default.
