@@ -98,3 +98,7 @@ token without it. If Zitadel comes to type its access tokens, the mode goes.
 - Keycloak: most featureful, 1-2GB+ JVM — too heavy for cheap servers.
 - Authentik: valid middle ground (~500-800MB Python stack).
 - Authelia: superb footprint (<30MB) but a forward-auth portal, not a full IAM.
+
+Zitadel is the reference provider for development. Which one a real deployment runs is
+open (roadmap): Zitadel's refresh tokens cannot be cut short by an admin and it has no
+DPoP, both of which Keycloak and Rauthy cover.
