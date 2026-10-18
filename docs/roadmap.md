@@ -107,7 +107,8 @@ internet outage is a goal, not a nice-to-have; this is where it lands. The big j
 
 When there is something installable: the release artifacts of ADR-0009, built from the
 release tag, and with them the CD design for the maintainer's own deployment. The
-[trademark scan](#trademark-scan) comes first.
+[trademark scan](#trademark-scan) comes first, and so does the
+[identity provider](#identity-provider-for-a-real-deployment) that deployment runs.
 
 ## Later, unordered
 
@@ -178,6 +179,36 @@ warranty, but say nothing about that.
 A formal EUIPO/USPTO trademark scan for "trastienda" in the software class, before
 publishing the first artifacts — not because the name is in doubt, but because that is
 the moment it stops being cheap to change (ADR-0011).
+
+### Identity provider for a real deployment
+
+Zitadel stays the reference provider for development, and the API takes any provider
+(ADR-0008). Checked in October 2026, it gives a real deployment fewer guarantees than
+wanted:
+
+- Its refresh tokens exist only under `offline_access` and outlive its session. Only
+  their holder can revoke them: neither ending the session nor an admin can
+  ([zitadel#12637](https://github.com/zitadel/zitadel/issues/12637)), and reactivating
+  a deactivated user makes the old ones work again. A token stolen while alive can be
+  renewed up to its absolute lifetime; short lifetimes bound that, nothing cuts it.
+- No sender-constrained tokens: DPoP has been asked for since 2023
+  ([zitadel#5402](https://github.com/zitadel/zitadel/issues/5402)).
+
+| | DPoP | Memory | Refresh tokens | Against it |
+|---|---|---|---|---|
+| Keycloak | Supported from 26.4, including binding only a public client's refresh tokens | ~1.25 GB per pod by its sizing guide | Bound to the SSO session: logout and admins end them | Its weight on a cheap server |
+| Rauthy | Yes | 35-65 MB (Rust), on Postgres or embedded | An admin's global logout deletes them all; whether a user's logout does is unverified | One maintainer, still 0.x |
+| Zitadel | Asked for since 2023 | ~200-400 MB | Above | Above |
+
+The rest offer no DPoP: authentik binds a key to the ID token only and leaves access
+tokens bearer, Authelia has it in an open pull request (and is a forward-auth portal),
+Logto ships it in `oidc-provider` but turns it off, and Ory Hydra closed the request as
+stale.
+
+**Deciding**, before the first real deployment: whether Zitadel has moved on either
+issue, whether Rauthy's refresh tokens end with the user's session, and Keycloak's
+memory measured on the target server. DPoP would also need the API to verify proofs
+(RFC 9449) and the session worker to hold a non-extractable key.
 
 ### orval's `tagsSplitDeduplication`
 
