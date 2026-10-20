@@ -24,7 +24,7 @@
     "@prisma/client": "7.10.1",
     "fastify": "5.12.7",
     "jose": "6.2.12",
-    "typebox": "1.4.1"
+    "typebox": "1.4.2"
   },
   "devDependencies": {
     "@scalar/fastify-api-reference": "1.75.0",
