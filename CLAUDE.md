@@ -122,7 +122,8 @@ without new evidence.
   nothing and have cost the reader time. Say them in a PR comment instead, and put a
   long rationale in the ADR the commit references.
 - **Each doc holds one kind of truth.** CLAUDE.md: how to work here today. ADRs: why —
-  what was decided, built or not, and the alternatives rejected; living documents,
+  what was decided, built or not, in a sentence or two, and each alternative rejected
+  with its reason in a line; how it is built is the code's to say. Living documents,
   updated in place, git is the history. `docs/roadmap.md`: state — done, next, and the
   open decisions with their evidence. `docs/design/`: a block's design ahead of its
   code, deleted when the block lands once any lasting why has moved to an ADR. A change
