@@ -19,17 +19,23 @@ Requirements: [mise](https://mise.jdx.dev) and Docker. mise pins node, pnpm and
 ```sh
 mise install
 pnpm install
+pnpm --filter @trastienda/admin exec playwright install --only-shell chromium   # for the admin's tests
 cp .env.example .env
 process-compose up      # everything, one TUI: Postgres 18, MinIO, Zitadel (:8080)
                         # through docker compose, then api (:3000) and admin (:4200)
 ```
 
+The admin at http://localhost:4200 and Zitadel's console at
+http://localhost:8080/ui/console share a first login: `zitadel-admin@zitadel.localhost` /
+`Password1!`. Stopping process-compose stops the containers too.
+
 Each process is one pnpm script, so they also run on their own:
 
 ```sh
-docker compose up -d                  # infra only
-pnpm --filter @trastienda/api dev     # API on http://localhost:3000
-pnpm --filter @trastienda/admin dev   # admin on http://localhost:4200
+docker compose up -d                          # infra only
+pnpm --filter @trastienda/api provision:idp   # Zitadel project + admin client
+pnpm --filter @trastienda/api dev             # API on http://localhost:3000
+pnpm --filter @trastienda/admin dev           # admin on http://localhost:4200
 ```
 
 The api process runs with the inspector on :9229; the "Attach to API" launch in
@@ -41,7 +47,7 @@ Everyday commands, from the repo root:
 pnpm lint         # ESLint (owns TS; layering rules included)
 pnpm format       # Prettier (owns html/scss/json/yaml)
 pnpm typecheck
-pnpm test         # unit + integration (Testcontainers)
+pnpm test         # unit + integration (Testcontainers); the admin's in headless Chromium
 pnpm build
 pnpm codegen      # regenerate openapi.json + the admin client, commit the result
 ```

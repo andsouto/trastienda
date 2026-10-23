@@ -64,6 +64,11 @@ jobs:
           git add --intent-to-add -- apps/api/openapi.json apps/admin/src/app/core/api
           git diff --exit-code -- apps/api/openapi.json apps/admin/src/app/core/api
 
+      # The admin's unit tests run in headless Chromium, the build that matches
+      # its pinned playwright
+      - name: Install Chromium for the admin's tests
+        run: pnpm --filter @trastienda/admin exec playwright install --with-deps --only-shell chromium
+
       - name: Test
         run: pnpm test
 

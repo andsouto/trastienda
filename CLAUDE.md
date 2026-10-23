@@ -26,7 +26,10 @@ without new evidence.
   committed; `pnpm codegen` regenerates, CI fails on drift. `API_DOCS=true` (set in
   `.env.example`) serves Scalar over the live spec at `/docs`; it is a devDependency,
   so it never ships.
-- **Frontend**: Angular 22 (standalone, signals, zoneless), Vitest via `ng test`.
+- **Frontend**: Angular 22 (standalone, signals, zoneless), Vitest via `ng test` in
+  headless Chromium through Playwright, so tests run against the browser's own APIs
+  (WebCrypto, workers; install it once:
+  `pnpm --filter @trastienda/admin exec playwright install --only-shell chromium`).
   Resource APIs (`resource`/`rxResource`/`httpResource`) are stable in v22 and are the
   intended data-fetching path. orval emits the API client into
   `apps/admin/src/app/core/api/` (`apps/admin/orval.config.ts`); auth, retries and the
@@ -34,9 +37,16 @@ without new evidence.
   `httpResource` helpers (`*.resource.ts`) for reads, injectable services for writes.
   Renovate's orval bumps go red on the codegen-drift check whenever the emitted output
   changes (it cannot run `pnpm codegen`): bump by hand and commit the regenerated
-  client.
+  client. The admin reads `public/config.json` (API base URL, issuer, client ID) before
+  it starts; it is gitignored, and process-compose's idp process writes it.
 - **Auth**: the API is a provider-agnostic OIDC resource server; Zitadel is the
   reference IdP in compose at http://localhost:8080 (ADR-0008). Tests use a fake JWKS.
+  Access tokens must be typed `at+jwt` (RFC 9068) unless `OIDC_TYPED_ACCESS_TOKENS=false`,
+  which Zitadel needs and `.env.example` sets. The admin logs in with `oauth4webapi`
+  (code flow + PKCE) from a `SharedWorker` that owns the session for every tab, its refresh
+  token in the worker's memory only and an access token handed to a tab per API request
+  (`core/auth/`); logout revokes the refresh token. The API answers CORS for
+  `CORS_ORIGINS`.
 - **Repo**: pnpm-workspaces monorepo — `apps/api`, `apps/admin` (ADR-0001). No task
   orchestrator yet (add Turborepo when CI hurts).
 - **CI/CD** (ADR-0009): GitHub Actions; `main` only takes rebase merges through a PR,
@@ -79,15 +89,22 @@ without new evidence.
 ## Commands
 
 - `pnpm lint` / `lint:fix`, `pnpm format:check` / `format`, `pnpm typecheck`,
-  `pnpm test`, `pnpm build` — all from root.
+  `pnpm test`, `pnpm build` — all from root. `pnpm test` runs one app at a time: the
+  admin's Chromium tests stall when a container starts beside them, as the api's
+  Testcontainers do
+  ([angular/angular-cli#34390](https://github.com/angular/angular-cli/issues/34390)).
 - `pnpm codegen` — regenerate `openapi.json` + the admin's orval client (run after any
   route/schema change and commit the result).
 - `process-compose up` — the whole local stack in one TUI: `docker compose up -d --wait`
   (Postgres 18 :5432, MinIO :9000/:9001, Zitadel :8080, first login
-  `zitadel-admin@zitadel.localhost` / `Password1!`), then api (:3000, inspector on
-  :9229 for the `.vscode/` attach config) and admin (:4200). Each process is a pnpm
-  script, so `docker compose up -d` + `pnpm --filter @trastienda/<app> dev` still work
-  on their own. Needs `.env` (`cp .env.example .env`). process-compose's own settings
+  `zitadel-admin@zitadel.localhost` / `Password1!`), then idp
+  (`apps/api/scripts/provision-idp.ts`: creates or updates the Zitadel project and the
+  admin's OIDC client, and writes the admin's `public/config.json`), api (:3000,
+  inspector on :9229 for the `.vscode/` attach config) and admin (:4200). Stopping it
+  stops the containers too. Zitadel applies its compose settings on first start only:
+  after changing them, `docker compose down -v` (wipes all local data). Each process is
+  a pnpm script, so `docker compose up -d` + `pnpm --filter @trastienda/<app> dev`
+  still work on their own. Needs `.env` (`cp .env.example .env`). process-compose's own settings
   live in `.pc_env` (control API off :8080, no `.env` injection into processes — each
   one loads its own config), and the Docker file is named `docker-compose.yaml`
   because process-compose claims `compose.yaml` as its own default.
@@ -105,7 +122,8 @@ without new evidence.
   nothing and have cost the reader time. Say them in a PR comment instead, and put a
   long rationale in the ADR the commit references.
 - **Each doc holds one kind of truth.** CLAUDE.md: how to work here today. ADRs: why —
-  what was decided, built or not, and the alternatives rejected; living documents,
+  what was decided, built or not, in a sentence or two, and each alternative rejected
+  with its reason in a line; how it is built is the code's to say. Living documents,
   updated in place, git is the history. `docs/roadmap.md`: state — done, next, and the
   open decisions with their evidence. `docs/design/`: a block's design ahead of its
   code, deleted when the block lands once any lasting why has moved to an ADR. A change

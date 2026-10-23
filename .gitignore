@@ -6,6 +6,8 @@ dist/
 .angular/
 coverage/
 out-tsc/
+# failure screenshots from Vitest's browser mode
+.vitest/
 *.tsbuildinfo
 
 # generated code (regenerable, except the committed contract artifacts)
@@ -15,6 +17,8 @@ apps/api/src/generated/
 .env
 .env.*
 !.env.example
+# the admin's runtime config, written by process-compose's idp process
+apps/admin/public/config.json
 
 # editor/os noise
 .DS_Store

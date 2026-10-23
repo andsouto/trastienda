@@ -6,6 +6,12 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!-- main.ts needs config.json before the app starts, so the download starts
+         here, alongside the bundle's. The browser only hands a preload to a
+         request with the same CORS settings, and fetch() uses CORS by default,
+         even for its own origin: without crossorigin, config.json would
+         download twice. -->
+    <link rel="preload" href="config.json" as="fetch" crossorigin="anonymous" />
   </head>
   <body>
     <app-root></app-root>

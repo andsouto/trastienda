@@ -16,7 +16,10 @@ its code links its design in [design/](design/), which goes when the block lands
 
 Done: the OIDC resource server of ADR-0008, first and before the endpoints it protects,
 so that the first route ever written already has its final shape rather than being
-rewritten once authentication shows up.
+rewritten once authentication shows up. Then the admin's login against the local
+Zitadel, provisioned by `process-compose up` so anyone's stack logs in as it starts,
+with the token added by an interceptor that composes over orval's `httpResource`
+helpers.
 
 Left:
 
@@ -25,14 +28,19 @@ Left:
   architecture becomes executable config rather than a document.
 - Business configuration: tax regime, seeded and editable rates.
 - Reference data: scales and palettes by seed, no management UI.
-- With the first real endpoint, confirming that interceptors compose as expected over
-  the services orval generates (ADR-0007): decided on paper, confirmed on contact.
-- Admin login against the reference IdP: a public OIDC app with PKCE in the local
-  Zitadel, provisioned by `process-compose up` rather than clicked in its console, so
-  anyone's stack logs in as it starts. Catalog's first screen needs it. The API
-  reference at `/docs` reuses the same app for its Authorize, with its own redirect
-  URI; the committed contract keeps only `bearerAuth`, and the OAuth scheme goes only
-  into the spec served to the reference.
+- With the first write endpoint, confirming that interceptors compose as expected over
+  the injectable services orval generates for writes, as they already do over its
+  `httpResource` helpers for reads (ADR-0007).
+- The API reference at `/docs` logs in through the admin's OIDC client for its
+  Authorize, with its own redirect URI added by the idp process; the committed contract
+  keeps only `bearerAuth`, and the OAuth scheme goes only into the spec served to the
+  reference.
+- With the second integration test file, one Postgres for all of them, started by the
+  api's Vitest `globalSetup`, which uses a database URL from outside when it gets one.
+  Root `pnpm test` then starts that environment first, runs the admin's and the api's
+  tests in parallel, and stops it after both. Today it runs one app at a time because
+  the admin's browser tests stall when a container starts or stops beside them
+  ([vitest#11636](https://github.com/vitest-dev/vitest/issues/11636)).
 
 ## 2. Catalog
 
@@ -99,7 +107,8 @@ internet outage is a goal, not a nice-to-have; this is where it lands. The big j
 
 When there is something installable: the release artifacts of ADR-0009, built from the
 release tag, and with them the CD design for the maintainer's own deployment. The
-[trademark scan](#trademark-scan) comes first.
+[trademark scan](#trademark-scan) comes first, and so does the
+[identity provider](#identity-provider-for-a-real-deployment) that deployment runs.
 
 ## Later, unordered
 
@@ -170,6 +179,36 @@ warranty, but say nothing about that.
 A formal EUIPO/USPTO trademark scan for "trastienda" in the software class, before
 publishing the first artifacts — not because the name is in doubt, but because that is
 the moment it stops being cheap to change (ADR-0011).
+
+### Identity provider for a real deployment
+
+Zitadel stays the reference provider for development, and the API takes any provider
+(ADR-0008). Checked in October 2026, it gives a real deployment fewer guarantees than
+wanted:
+
+- Its refresh tokens exist only under `offline_access` and outlive its session. Only
+  their holder can revoke them: neither ending the session nor an admin can
+  ([zitadel#12637](https://github.com/zitadel/zitadel/issues/12637)), and reactivating
+  a deactivated user makes the old ones work again. A token stolen while alive can be
+  renewed up to its absolute lifetime; short lifetimes bound that, nothing cuts it.
+- No sender-constrained tokens: DPoP has been asked for since 2023
+  ([zitadel#5402](https://github.com/zitadel/zitadel/issues/5402)).
+
+| | DPoP | Memory | Refresh tokens | Against it |
+|---|---|---|---|---|
+| Keycloak | Supported from 26.4, including binding only a public client's refresh tokens | ~1.25 GB per pod by its sizing guide | Bound to the SSO session: logout and admins end them | Its weight on a cheap server |
+| Rauthy | Yes | 35-65 MB (Rust), on Postgres or embedded | An admin's global logout deletes them all; whether a user's logout does is unverified | One maintainer, still 0.x |
+| Zitadel | Asked for since 2023 | ~200-400 MB | Above | Above |
+
+The rest offer no DPoP: authentik binds a key to the ID token only and leaves access
+tokens bearer, Authelia has it in an open pull request (and is a forward-auth portal),
+Logto ships it in `oidc-provider` but turns it off, and Ory Hydra closed the request as
+stale.
+
+**Deciding**, before the first real deployment: whether Zitadel has moved on either
+issue, whether Rauthy's refresh tokens end with the user's session, and Keycloak's
+memory measured on the target server. DPoP would also need the API to verify proofs
+(RFC 9449) and the session worker to hold a non-extractable key.
 
 ### orval's `tagsSplitDeduplication`
 

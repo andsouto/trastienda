@@ -50,6 +50,17 @@ contact:** the emitted `*.resource.ts` did not compile under
 regression guard that typechecks the generated samples under the flag — so the risk
 is real, and covered where it should be.
 
+### Runtime configuration
+
+The admin reads its deployment's settings (API base URL, issuer, client ID) from
+`config.json` before it starts, since a published build cannot know them.
+
+### Origins: the admin calls the API cross-origin
+
+The identity provider, the API and the admin each live on their own origin, and the API
+answers CORS for `CORS_ORIGINS` itself: there is no proxy in development, the future shop
+needs CORS anyway, and one origin for all would make every deployment run a reverse proxy.
+
 ## Alternatives rejected
 
 - **Angular Material**: the smallest component set of the UI libraries measured and a
