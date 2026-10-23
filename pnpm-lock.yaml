@@ -274,8 +274,8 @@ importers:
         version: 1.4.2
     devDependencies:
       '@scalar/fastify-api-reference':
-        specifier: 1.75.0
-        version: 1.75.0
+        specifier: 1.75.1
+        version: 1.75.1
       '@testcontainers/postgresql':
         specifier: 12.2.1
         version: 12.2.1(supports-color@8.1.1)
@@ -1971,8 +1971,8 @@ packages:
     resolution: {integrity: sha512-FjzUNhDgMlrIqANp3Lj/2XuRoSL8glyueE6Qc62Y1HzNQEEmk2pmdCTAfrN7bU9L49X5qtNAn3KZdL8ng1taBw==}
     engines: {node: '>=22'}
 
-  '@scalar/fastify-api-reference@1.75.0':
-    resolution: {integrity: sha512-SFCuOlM4ksEjhRtwocUiiXrzROu8CYL6N8d4CwJY2S4YNNCBPtEVeZ1ELJ8r3oQX1WbTA1mDpmrjG3Wm6sY8kw==}
+  '@scalar/fastify-api-reference@1.75.1':
+    resolution: {integrity: sha512-wzYDc4Fvf0xxRgWLHn+0M/jskguH757nshlGz82eXp0DKbprvkfjHQnegswJ2Sy+JtT+6caTrj5X9n+/p5BoWg==}
     engines: {node: '>=22'}
 
   '@scalar/helpers@0.16.3':
@@ -1989,6 +1989,10 @@ packages:
 
   '@scalar/json-magic@0.16.0':
     resolution: {integrity: sha512-NXd4v3Ua0w9xv+YJolQBGyXTl/Elb0cWPEl1+hpU78BOKPrfQT3YdDtACGll65uWUgW0W+/1YJA5NKyw0eYUuQ==}
+    engines: {node: '>=22'}
+
+  '@scalar/json-magic@0.16.1':
+    resolution: {integrity: sha512-yWQJUrkufUsShizF+rGKO4BoZ/ijMpnrgwRjtCA2cYqjxkQOYaQCd+WVF+b3ihmXE7amr768pLItFCx5UV/ObQ==}
     engines: {node: '>=22'}
 
   '@scalar/json-schema-validator@0.1.13':
@@ -4431,6 +4435,10 @@ packages:
     resolution: {integrity: sha512-RYONW2MeafgYlkVOKYKkA/Ag7BmXqgIWCa8t1m0JcxrQg9pI9lEqRhAOruOBCbAohOa/gkCF+iPi9hrgvTzu6Q==}
     engines: {node: '>=20.18.1'}
 
+  undici@7.30.1:
+    resolution: {integrity: sha512-03KrMbjIFDWQR5RNPrSw3bd1r12JpyFQl9/yxjUbJtqkjmllqC5lFjZh6ujeuJCKr8EOQvRW872Oy/az+nLYxg==}
+    engines: {node: '>=20.18.1'}
+
   undici@8.12.2:
     resolution: {integrity: sha512-XtuDWVdqTLr3NAxm2ly9/hU6kUsJOgGh1RASzMBbsw6aWCOaQzHdW+QQDfdERjfJ2V5vL5pRPa4RetO9UfivDg==}
     engines: {node: '>=22.19.0'}
@@ -6103,10 +6111,10 @@ snapshots:
       '@scalar/types': 0.24.0
       '@scalar/validation': 0.6.7
 
-  '@scalar/fastify-api-reference@1.75.0':
+  '@scalar/fastify-api-reference@1.75.1':
     dependencies:
       '@scalar/client-side-rendering': 0.4.12
-      '@scalar/json-magic': 0.16.0
+      '@scalar/json-magic': 0.16.1
       fastify-plugin: 4.5.1
       github-slugger: 2.0.0
       yaml: 2.9.1
@@ -6127,6 +6135,13 @@ snapshots:
       '@scalar/helpers': 0.16.4
       pathe: 2.0.3
       undici: 7.29.1
+      yaml: 2.9.1
+
+  '@scalar/json-magic@0.16.1':
+    dependencies:
+      '@scalar/helpers': 0.16.4
+      pathe: 2.0.3
+      undici: 7.30.1
       yaml: 2.9.1
 
   '@scalar/json-schema-validator@0.1.13':
@@ -8756,6 +8771,8 @@ snapshots:
   undici-types@8.9.0: {}
 
   undici@7.29.1: {}
+
+  undici@7.30.1: {}
 
   undici@8.12.2: {}
 
