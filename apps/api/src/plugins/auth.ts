@@ -19,6 +19,7 @@ declare module 'fastify' {
     Set by `protectScope`; null outside a protected scope.
     */
     auth: AuthenticatedUser | null;
+
     /**
      * The caller, inside a protected scope. Throws outside one rather than
      * returning null: a route that reaches this without a token is registered
