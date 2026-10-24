@@ -8,6 +8,7 @@ import eslint from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import vitest from '@vitest/eslint-plugin';
 import {defineConfig} from 'eslint/config';
+import jsdoc from 'eslint-plugin-jsdoc';
 import perfectionist from 'eslint-plugin-perfectionist';
 import unicorn from 'eslint-plugin-unicorn';
 import tseslint from 'typescript-eslint';
@@ -42,7 +43,7 @@ export function baseConfig(tsconfigRootDir) {
           tsconfigRootDir,
         },
       },
-      plugins: {perfectionist},
+      plugins: {jsdoc, perfectionist},
       rules: {
         'perfectionist/sort-imports': ['error', {type: 'natural'}],
         'perfectionist/sort-named-imports': ['error', {type: 'natural'}],
@@ -80,7 +81,11 @@ export function baseConfig(tsconfigRootDir) {
         }],
         'unicorn/prevent-abbreviations': 'off',
         'unicorn/no-null': 'off',
+        // The ` * ` prefix on every line of a documentation comment: it reads
+        // better, and it is what editors continue and orval generates.
         'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
+        'jsdoc/check-alignment': 'error',
+        'jsdoc/require-asterisk-prefix': 'error',
         '@typescript-eslint/no-unused-vars': ['error', {
           args: 'all',
           argsIgnorePattern: '^_',
