@@ -8,6 +8,7 @@ import eslint from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import vitest from '@vitest/eslint-plugin';
 import {defineConfig} from 'eslint/config';
+import jsdoc from 'eslint-plugin-jsdoc';
 import perfectionist from 'eslint-plugin-perfectionist';
 import unicorn from 'eslint-plugin-unicorn';
 import tseslint from 'typescript-eslint';
@@ -42,14 +43,49 @@ export function baseConfig(tsconfigRootDir) {
           tsconfigRootDir,
         },
       },
-      plugins: {perfectionist},
+      plugins: {jsdoc, perfectionist},
       rules: {
         'perfectionist/sort-imports': ['error', {type: 'natural'}],
         'perfectionist/sort-named-imports': ['error', {type: 'natural'}],
         'perfectionist/sort-named-exports': ['error', {type: 'natural'}],
+        // Groups only, in this order. Private fields come first because the
+        // public ones are often derived from them (`session =
+        // this.#session.asReadonly()`), and fields initialise top to bottom.
+        // Methods put what the class offers before how it does it.
+        'perfectionist/sort-classes': ['error', {
+          type: 'unsorted',
+          groups: [
+            'index-signature',
+            'static-property',
+            'static-block',
+            'private-property',
+            ['public-property', 'protected-property', 'property'],
+            'constructor',
+            ['public-method', 'protected-method', 'method', 'get-method', 'set-method'],
+            'private-method',
+            'unknown',
+          ],
+        }],
+        // A blank line before every documentation comment, except where a
+        // block opens, so each documented member reads on its own.
+        '@stylistic/lines-around-comment': ['error', {
+          beforeBlockComment: true,
+          allowArrayStart: true,
+          allowBlockStart: true,
+          allowClassStart: true,
+          allowEnumStart: true,
+          allowInterfaceStart: true,
+          allowModuleStart: true,
+          allowObjectStart: true,
+          allowTypeStart: true,
+        }],
         'unicorn/prevent-abbreviations': 'off',
         'unicorn/no-null': 'off',
+        // The ` * ` prefix on every line of a documentation comment: it reads
+        // better, and it is what editors continue and orval generates.
         'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
+        'jsdoc/check-alignment': 'error',
+        'jsdoc/require-asterisk-prefix': 'error',
         '@typescript-eslint/no-unused-vars': ['error', {
           args: 'all',
           argsIgnorePattern: '^_',
