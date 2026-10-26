@@ -27,7 +27,7 @@
     "typebox": "1.4.3"
   },
   "devDependencies": {
-    "@scalar/fastify-api-reference": "1.75.1",
+    "@scalar/fastify-api-reference": "1.76.0",
     "@testcontainers/postgresql": "12.2.1",
     "@types/node": "26.6.5",
     "dotenv": "18.0.9",
