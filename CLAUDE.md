@@ -62,10 +62,11 @@ without new evidence.
 - **ESLint owns TS/JS, config per app** (`apps/api/eslint.config.js`,
   `apps/admin/eslint.config.js`), each importing the shared ruleset from
   `eslint.base.config.js` at root (tseslint strictTypeChecked + stylisticTypeChecked,
-  @stylistic — 2 spaces, single quotes, semi, 1tbs —, unicorn, perfectionist, vitest
-  plugin), the same relationship `tsconfig.base.json` has with each app's
-  `tsconfig.json`. Root `pnpm lint`/`lint:fix` run a root `eslint .` (loose root
-  files, `apps/` excluded) plus `pnpm -r --no-bail lint`/`lint:fix`, so every app
+  @stylistic — 2 spaces, single quotes, semi, 1tbs —, unicorn's unopinionated preset
+  plus the picks listed in the file, perfectionist, vitest plugin), the same
+  relationship `tsconfig.base.json` has with each app's `tsconfig.json`. Root
+  `pnpm lint`/`lint:fix` run a root `eslint .` (loose root files, `apps/` excluded)
+  plus `pnpm -r --no-bail lint`/`lint:fix`, so every app
   reports even when another fails. Each app's `package.json` lists its own lint
   devDependencies (the shared-ruleset packages stay root devDependencies since
   `eslint.base.config.js` lives there and its imports resolve from that location).
