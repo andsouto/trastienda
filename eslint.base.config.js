@@ -1,9 +1,7 @@
 // @ts-check
-// Shared ESLint ruleset, consumed by each app's own eslint.config.js — the
-// eslint equivalent of tsconfig.base.json. Not runnable on its own: it only
-// exports a factory, and its own imports resolve from *this file's* location
-// (repo root), so the packages it imports stay root devDependencies even
-// though each app decides for itself when/how to apply them.
+// Shared ESLint ruleset: each app's eslint.config.js spreads baseConfig(), as
+// each app's tsconfig.json extends tsconfig.base.json. Its imports resolve from
+// this file, so the plugins it uses stay root devDependencies.
 import eslint from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import vitest from '@vitest/eslint-plugin';
@@ -13,13 +11,13 @@ import unicorn from 'eslint-plugin-unicorn';
 import tseslint from 'typescript-eslint';
 
 /**
- * @param {string} tsconfigRootDir - pass `import.meta.dirname` from the calling app's eslint.config.js
- * @returns {import('eslint/config').Config[]} already flattened by defineConfig, so
- * `extends` below is resolved once here rather than left for each app's own
- * `defineConfig()` call to re-resolve.
+ * @param {string} tsconfigRootDir - `import.meta.dirname` of the calling app's eslint.config.js
+ * @returns {import('eslint/config').Config[]} already flattened, so each app's
+ * defineConfig() does not resolve `extends` again
  */
 export function baseConfig(tsconfigRootDir) {
   return defineConfig(
+    // TypeScript: the presets, then what this repo adds to them.
     {
       files: ['**/*.ts'],
       extends: [
@@ -44,12 +42,17 @@ export function baseConfig(tsconfigRootDir) {
       },
       plugins: {perfectionist},
       rules: {
+        // Order of imports and exports.
         'perfectionist/sort-imports': ['error', {type: 'natural'}],
         'perfectionist/sort-named-imports': ['error', {type: 'natural'}],
         'perfectionist/sort-named-exports': ['error', {type: 'natural'}],
+
+        // unicorn's recommended rules that do not fit this code.
         'unicorn/prevent-abbreviations': 'off',
         'unicorn/no-null': 'off',
         'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
+
+        // A leading `_` marks a name as unused on purpose.
         '@typescript-eslint/no-unused-vars': ['error', {
           args: 'all',
           argsIgnorePattern: '^_',
@@ -70,6 +73,7 @@ export function baseConfig(tsconfigRootDir) {
       },
     },
 
+    // Tests.
     {
       files: ['**/*.test.ts', '**/*.spec.ts'],
       plugins: {vitest},
@@ -80,7 +84,7 @@ export function baseConfig(tsconfigRootDir) {
       },
     },
 
-    // plain JS (config files)
+    // Plain JS: config files, without type information.
     {
       files: ['**/*.js', '**/*.mjs'],
       extends: [eslint.configs.recommended, tseslint.configs.disableTypeChecked],
