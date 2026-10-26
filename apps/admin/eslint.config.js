@@ -16,6 +16,8 @@ export default defineConfig(
     rules: {
       '@angular-eslint/directive-selector': ['error', {type: 'attribute', prefix: 'app', style: 'camelCase'}],
       '@angular-eslint/component-selector': ['error', {type: 'element', prefix: 'app', style: 'kebab-case'}],
+      // Prettier formats templates and styles only in files of their own.
+      '@angular-eslint/component-max-inline-declarations': ['error', {styles: 0, template: 0}],
       '@typescript-eslint/no-extraneous-class': ['error', {allowWithDecorator: true}],
     },
   },

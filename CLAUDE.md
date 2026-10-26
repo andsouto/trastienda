@@ -83,7 +83,8 @@ without new evidence.
   lives there and its imports resolve from that location).
   api adds **eslint-plugin-boundaries**, enforcing the hexagonal layering (ADR-0004) —
   domain imports nothing external, application only node builtins, no cross-module
-  imports. admin adds **angular-eslint** (ts rules + templates + a11y).
+  imports. admin adds **angular-eslint** (ts rules + templates + a11y), with each
+  component's template and styles in files of their own, where Prettier formats them.
 - **Prettier owns everything else** (html via angular parser, scss, json, yaml);
   TS/JS/md are in `.prettierignore`. Never add eslint-config-prettier — domains
   don't overlap.
