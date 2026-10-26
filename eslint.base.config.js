@@ -24,7 +24,7 @@ export function baseConfig(tsconfigRootDir) {
         eslint.configs.recommended,
         ...tseslint.configs.strictTypeChecked,
         ...tseslint.configs.stylisticTypeChecked,
-        unicorn.configs.recommended,
+        unicorn.configs.unopinionated,
         stylistic.configs.customize({
           blockSpacing: false,
           braceStyle: '1tbs',
@@ -47,10 +47,32 @@ export function baseConfig(tsconfigRootDir) {
         'perfectionist/sort-named-imports': ['error', {type: 'natural'}],
         'perfectionist/sort-named-exports': ['error', {type: 'natural'}],
 
-        // unicorn's recommended rules that do not fit this code.
-        'unicorn/prevent-abbreviations': 'off',
-        'unicorn/no-null': 'off',
-        'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
+        // unicorn's recommended rules that unopinionated leaves out: first
+        // bugs and newer APIs, then conventions the code follows.
+        'unicorn/no-array-callback-reference': 'error',
+        'unicorn/no-array-splice': 'error',
+        'unicorn/no-loop-iterable-mutation': 'error',
+        'unicorn/no-mismatched-map-key': 'error',
+        'unicorn/no-object-methods-with-collections': 'error',
+        'unicorn/no-optional-chaining-on-undeclared-variable': 'error',
+        'unicorn/no-return-array-push': 'error',
+        'unicorn/no-unsafe-json-serialization': 'error',
+        'unicorn/no-unsafe-property-key': 'error',
+        'unicorn/no-unsafe-string-replacement': 'error',
+        'unicorn/prefer-abort-signal-timeout': 'error',
+        'unicorn/prefer-private-class-fields': 'error',
+
+        'unicorn/catch-error-name': 'error',
+        'unicorn/filename-case': 'error',
+        'unicorn/logical-assignment-operators': 'error',
+        'unicorn/no-nested-ternary': 'error',
+        'unicorn/no-useless-else': 'error',
+        'unicorn/operator-assignment': 'error',
+        'unicorn/switch-case-braces': 'error',
+
+        // typescript-eslint's knows the type, and leaves string arrays alone.
+        'unicorn/require-array-sort-compare': 'off',
+        '@typescript-eslint/require-array-sort-compare': 'error',
 
         // A leading `_` marks a name as unused on purpose.
         '@typescript-eslint/no-unused-vars': ['error', {
@@ -62,26 +84,11 @@ export function baseConfig(tsconfigRootDir) {
       },
     },
 
-    // Config files their tool loads, never imported: `export default
-    // defineConfig()` counts as a side effect, and prisma.config.ts also loads
-    // .env at import time by design. Listed by name so nothing is exempted by
-    // accident (a `*.config.ts` glob also matches the admin's app.config.ts).
-    {
-      files: ['**/orval.config.ts', '**/prisma.config.ts', '**/vitest.config.ts'],
-      rules: {
-        'unicorn/no-top-level-side-effects': 'off',
-      },
-    },
-
     // Tests.
     {
       files: ['**/*.test.ts', '**/*.spec.ts'],
       plugins: {vitest},
-      rules: {
-        ...vitest.configs.recommended.rules,
-        // beforeAll/afterAll assigning suite-level state is the standard pattern
-        'unicorn/no-top-level-assignment-in-function': 'off',
-      },
+      rules: vitest.configs.recommended.rules,
     },
 
     // Plain JS: config files, without type information.
