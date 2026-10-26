@@ -10,8 +10,8 @@ import { identityPlugin } from './plugins/identity.ts';
 
 export interface AppOptions {
   /**
-  Serves the API reference at `/docs`. Development only: see `plugins/api-reference.ts`.
-  */
+   * Serves the API reference at `/docs`. Development only: see `plugins/api-reference.ts`.
+   */
   apiReference?: boolean;
   logger?: FastifyServerOptions['logger'];
   verifyToken: VerifyToken;

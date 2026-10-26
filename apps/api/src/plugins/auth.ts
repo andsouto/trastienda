@@ -2,8 +2,8 @@ import { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fa
 
 export interface AuthenticatedUser {
   /**
-  The token's `sub` claim.
-  */
+   * The token's `sub` claim.
+   */
   subject: string;
 }
 
@@ -16,9 +16,10 @@ export type VerifyToken = (token: string) => Promise<AuthenticatedUser>;
 declare module 'fastify' {
   interface FastifyRequest {
     /**
-    Set by `protectScope`; null outside a protected scope.
-    */
+     * Set by `protectScope`; null outside a protected scope.
+     */
     auth: AuthenticatedUser | null;
+
     /**
      * The caller, inside a protected scope. Throws outside one rather than
      * returning null: a route that reaches this without a token is registered
@@ -31,8 +32,8 @@ declare module 'fastify' {
 const BEARER_PREFIX = 'Bearer ';
 
 /**
-Teaches every request about the caller. Once, at the root.
-*/
+ * Teaches every request about the caller. Once, at the root.
+ */
 export function installAuth(app: FastifyInstance): void {
   app.decorateRequest('auth', null);
   app.decorateRequest('caller', function (this: FastifyRequest): AuthenticatedUser {

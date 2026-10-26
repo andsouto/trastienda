@@ -63,13 +63,14 @@ without new evidence.
   `apps/admin/eslint.config.js`), each importing the shared ruleset from
   `eslint.base.config.js` at root (tseslint strictTypeChecked + stylisticTypeChecked,
   @stylistic — 2 spaces, single quotes, semi, 1tbs —, unicorn's unopinionated preset
-  plus the picks listed in the file, perfectionist, vitest plugin), the same
+  plus the picks listed in the file, perfectionist, jsdoc's stylistic and logical
+  presets for how documentation comments are written, vitest plugin), the same
   relationship `tsconfig.base.json` has with each app's `tsconfig.json`. Root
   `pnpm lint`/`lint:fix` run a root `eslint .` (loose root files, `apps/` excluded)
-  plus `pnpm -r --no-bail lint`/`lint:fix`, so every app
-  reports even when another fails. Each app's `package.json` lists its own lint
-  devDependencies (the shared-ruleset packages stay root devDependencies since
-  `eslint.base.config.js` lives there and its imports resolve from that location).
+  plus `pnpm -r --no-bail lint`/`lint:fix`, so every app reports even when another
+  fails. Each app's `package.json` lists its own lint devDependencies (the
+  shared-ruleset packages stay root devDependencies since `eslint.base.config.js`
+  lives there and its imports resolve from that location).
   api adds **eslint-plugin-boundaries**, enforcing the hexagonal layering (ADR-0004) —
   domain imports nothing external, application only node builtins, no cross-module
   imports. admin adds **angular-eslint** (ts rules + templates + a11y).
