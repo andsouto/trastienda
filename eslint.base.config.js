@@ -42,10 +42,28 @@ export function baseConfig(tsconfigRootDir) {
       },
       plugins: {perfectionist},
       rules: {
-        // Order of imports and exports.
+        // Order of imports, exports and class members. Private fields go
+        // first: the public ones are often derived from them.
         'perfectionist/sort-imports': ['error', {type: 'natural'}],
         'perfectionist/sort-named-imports': ['error', {type: 'natural'}],
         'perfectionist/sort-named-exports': ['error', {type: 'natural'}],
+        'perfectionist/sort-classes': ['error', {
+          type: 'unsorted',
+          groups: [
+            'index-signature',
+            ['static-property', 'static-accessor-property'],
+            'static-block',
+            ['private-property', 'private-accessor-property'],
+            ['property', 'accessor-property'],
+            'constructor',
+            'static-method',
+            ['method', 'get-method', 'set-method'],
+            ['private-method', 'private-get-method', 'private-set-method'],
+            'unknown',
+          ],
+          newlinesBetween: 1,
+          newlinesInside: 'ignore',
+        }],
 
         // unicorn's recommended rules that unopinionated leaves out: first
         // bugs and newer APIs, then conventions the code follows.
