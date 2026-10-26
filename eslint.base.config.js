@@ -6,6 +6,7 @@ import eslint from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import vitest from '@vitest/eslint-plugin';
 import {defineConfig} from 'eslint/config';
+import jsdoc from 'eslint-plugin-jsdoc';
 import perfectionist from 'eslint-plugin-perfectionist';
 import unicorn from 'eslint-plugin-unicorn';
 import tseslint from 'typescript-eslint';
@@ -25,6 +26,9 @@ export function baseConfig(tsconfigRootDir) {
         ...tseslint.configs.strictTypeChecked,
         ...tseslint.configs.stylisticTypeChecked,
         unicorn.configs.unopinionated,
+        // How documentation comments are written, not that they exist.
+        jsdoc.configs['flat/stylistic-typescript-error'],
+        jsdoc.configs['flat/logical-typescript-error'],
         stylistic.configs.customize({
           blockSpacing: false,
           braceStyle: '1tbs',
@@ -91,6 +95,10 @@ export function baseConfig(tsconfigRootDir) {
         // typescript-eslint's knows the type, and leaves string arrays alone.
         'unicorn/require-array-sort-compare': 'off',
         '@typescript-eslint/require-array-sort-compare': 'error',
+
+        // Documentation comments: a blank line before each, one-liners too.
+        'jsdoc/lines-before-block': ['error', {ignoreSingleLines: false}],
+        'jsdoc/informative-docs': 'error',
 
         // A leading `_` marks a name as unused on purpose.
         '@typescript-eslint/no-unused-vars': ['error', {
