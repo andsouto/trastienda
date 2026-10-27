@@ -67,7 +67,12 @@ function fakeIdp() {
 interface TokenOptions {
   audience?: string;
   claims?: Record<string, unknown>;
-  expiresIn?: string;
+
+  /**
+   * When the token expires: five minutes from now unless given, never if null.
+   */
+  expiresIn?: string | null;
+
   issuer: string;
   key?: CryptoKey;
   notBefore?: string;
@@ -85,8 +90,11 @@ async function signToken(options: TokenOptions): Promise<string> {
     .setProtectedHeader({ alg: 'RS256', kid: KEY_ID, ...(type !== null && { typ: type }) })
     .setIssuedAt()
     .setIssuer(options.issuer)
-    .setAudience(options.audience ?? AUDIENCE)
-    .setExpirationTime(options.expiresIn ?? '5m');
+    .setAudience(options.audience ?? AUDIENCE);
+
+  if (options.expiresIn !== null) {
+    token.setExpirationTime(options.expiresIn ?? '5m');
+  }
 
   if (options.subject !== null) {
     token.setSubject(options.subject ?? 'user-42');
@@ -136,6 +144,7 @@ describe('against a healthy provider', () => {
 
   it.each<[string, Partial<TokenOptions>]>([
     ['is expired', { expiresIn: '-1m' }],
+    ['never expires', { expiresIn: null }],
     ['is not valid for minutes yet', { notBefore: '2m' }],
     ['was issued for another audience', { audience: 'someone-else' }],
     ['names another issuer', { issuer: 'https://evil.example.test' }],
