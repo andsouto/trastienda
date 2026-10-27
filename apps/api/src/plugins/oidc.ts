@@ -74,6 +74,9 @@ export function createTokenVerifier(options: TokenVerifierOptions): VerifyToken 
       audience: options.audience,
       clockTolerance: CLOCK_TOLERANCE,
       issuer: options.issuer,
+      // jose checks exp only when the token has one, and a token verified here
+      // stays valid until it expires.
+      requiredClaims: ['exp'],
     });
 
     requireAccessToken(protectedHeader, payload, options.typedAccessTokens);
