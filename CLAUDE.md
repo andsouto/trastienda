@@ -95,7 +95,7 @@ without new evidence.
   `pnpm test`, `pnpm build` — all from root. `pnpm test` runs one app at a time: the
   admin's Chromium tests stall when a container starts beside them, as the api's
   Testcontainers do
-  ([angular/angular-cli#34390](https://github.com/angular/angular-cli/issues/34390)).
+  ([vitest#11636](https://github.com/vitest-dev/vitest/issues/11636)).
 - `pnpm codegen` — regenerate `openapi.json` + the admin's orval client (run after any
   route/schema change and commit the result).
 - `process-compose up` — the whole local stack in one TUI: `docker compose up -d --wait`
