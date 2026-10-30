@@ -9,8 +9,8 @@ They are not a spec to satisfy at all costs. If reality or intent diverges from 
 ADR says, that's a prompt to edit the ADR, not to contort the implementation (or delay
 work) to match stale text.
 
-An ADR records what is decided, built or not. Whether it is built yet, what comes next
-and the decisions still open live in the [roadmap](../roadmap.md), not here.
+An ADR records what is decided, built or not. What is left to build and the decisions
+still open live in the [roadmap](../roadmap.md), not here.
 
 | # | Decision |
 |---|----------|
