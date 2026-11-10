@@ -33,7 +33,7 @@
     "@vitest/browser-playwright": "5.1.0",
     "angular-eslint": "22.6.0",
     "eslint": "10.14.0",
-    "orval": "8.46.0",
+    "orval": "8.47.0",
     "playwright": "1.65.0",
     "typescript": "6.0.3",
     "vitest": "5.1.0"
