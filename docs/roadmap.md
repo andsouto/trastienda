@@ -5,23 +5,14 @@ depends on the shop, so there is no MVP line here — only what gets built and i
 order. Each block includes its admin screens; an API nobody can use is not a delivered
 block.
 
-This is the one document that tracks state: what is done, what comes next, and the
-decisions still open with the evidence gathered so far. Why things are the way they are
-lives in the [ADRs](decisions/): the rules across modules in
-[ADR-0013](decisions/0013-invariants-unit-of-work-bridges.md) and
-[ADR-0014](decisions/0014-fiscal-and-deployment-scope.md). A block designed ahead of
-its code links its design in [design/](design/), which goes when the block lands.
+This is the one document that tracks state: what is left to build and the decisions
+still open, with the evidence gathered so far. What is built is the code's to say: a
+block leaves this page when it lands, and so does its design in [design/](design/).
+Why things are the way they are lives in the [ADRs](decisions/): the rules across
+modules in [ADR-0013](decisions/0013-invariants-unit-of-work-bridges.md) and
+[ADR-0014](decisions/0014-fiscal-and-deployment-scope.md).
 
-## 1. Foundations — in progress
-
-Done: the OIDC resource server of ADR-0008, first and before the endpoints it protects,
-so that the first route ever written already has its final shape rather than being
-rewritten once authentication shows up. Then the admin's login against the local
-Zitadel, provisioned by `process-compose up` so anyone's stack logs in as it starts,
-with the token added by an interceptor that composes over orval's `httpResource`
-helpers.
-
-Left:
+## 1. Foundations
 
 - First, the session worker letting go of closed tabs: `serveSession` subscribes each
   tab that connects to the session's changes and nothing unsubscribes it, so every
