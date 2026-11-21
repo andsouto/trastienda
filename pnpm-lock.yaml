@@ -295,8 +295,8 @@ importers:
         version: 1.4.7
     devDependencies:
       '@scalar/fastify-api-reference':
-        specifier: 1.80.0
-        version: 1.80.0
+        specifier: 1.81.0
+        version: 1.81.0
       '@testcontainers/postgresql':
         specifier: 12.2.1
         version: 12.2.1(bare-buffer@3.7.1)(supports-color@8.1.1)
@@ -1897,8 +1897,8 @@ packages:
     resolution: {integrity: sha512-zjRtLjOysw6C8tFOxvwR5d5tnjJh8Ga46SAf3fhioHicDUB3c9dx6YbxKWE03b3VvDdhDFfkryHbXUfrMGeCQg==}
     engines: {node: '>=22'}
 
-  '@scalar/fastify-api-reference@1.80.0':
-    resolution: {integrity: sha512-o8EKtQngBpiIW54WYgU4aIwuaUuVC082uarrMOVv+i5kIiA3TCR2MblLCKquN5RPq7MrpNJ/37eyO/vG82Yqfg==}
+  '@scalar/fastify-api-reference@1.81.0':
+    resolution: {integrity: sha512-bKuwEO1Q2DutfyzL9IkMC3bhtXFOMyVDP+z/Ie5AXtODwzTVTG6dt0ntWzyZVBKehM+vGJHa1Duq88QHYlyDVQ==}
     engines: {node: '>=22'}
 
   '@scalar/helpers@0.16.4':
@@ -1921,8 +1921,8 @@ packages:
     resolution: {integrity: sha512-mz/H7H9gP2jZvViQS2cyOmqrBvLQwN5UdJ+5k77yBxV25D/6jh0BfGubQyxNwAqA62TP8JnEiIQ4gzbsMZvESw==}
     engines: {node: '>=22.19.0'}
 
-  '@scalar/json-magic@0.20.1':
-    resolution: {integrity: sha512-yF9eqxwa+A0ZMw8Pr8dgcHPs4gI0+OCknhxXbtC+5eCb5FS25kbLASl9TfbBS27LrbcXwg0fIsEpVZtliWhexQ==}
+  '@scalar/json-magic@0.21.0':
+    resolution: {integrity: sha512-4jsUQIRuQ7xczWvbsqkFcn5CEi3vESzPXri5CcCRg2uLTpgefVoS515nJMw1YTH7MqHhOHedPXks6xTd6Pkm3g==}
     engines: {node: '>=22.19.0'}
 
   '@scalar/json-schema-validator@0.1.18':
@@ -6163,10 +6163,10 @@ snapshots:
       '@scalar/types': 0.30.0
       '@scalar/validation': 0.6.9
 
-  '@scalar/fastify-api-reference@1.80.0':
+  '@scalar/fastify-api-reference@1.81.0':
     dependencies:
       '@scalar/client-side-rendering': 0.4.21
-      '@scalar/json-magic': 0.20.1
+      '@scalar/json-magic': 0.21.0
       fastify-plugin: 6.0.1
       github-slugger: 2.0.0
       yaml: 2.9.1
@@ -6191,7 +6191,7 @@ snapshots:
       undici: 8.12.3
       yaml: 2.9.1
 
-  '@scalar/json-magic@0.20.1':
+  '@scalar/json-magic@0.21.0':
     dependencies:
       '@scalar/helpers': 0.18.1
       pathe: 2.0.3
