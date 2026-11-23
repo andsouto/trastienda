@@ -22,7 +22,7 @@
     "@angular/forms": "22.3.0",
     "@angular/platform-browser": "22.3.0",
     "@angular/router": "22.3.0",
-    "oauth4webapi": "3.8.8",
+    "oauth4webapi": "3.8.9",
     "rxjs": "7.8.2",
     "tslib": "2.9.1"
   },
