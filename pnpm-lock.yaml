@@ -295,8 +295,8 @@ importers:
         version: 1.4.7
     devDependencies:
       '@scalar/fastify-api-reference':
-        specifier: 1.82.0
-        version: 1.82.0
+        specifier: 1.82.1
+        version: 1.82.1
       '@testcontainers/postgresql':
         specifier: 12.2.2
         version: 12.2.2(bare-buffer@3.7.3)(supports-color@8.1.1)
@@ -2018,8 +2018,8 @@ packages:
     resolution: {integrity: sha512-7neipw+9bwNzHtEChMlFJkTFCKFbRg8W88MsWJBYH+wHhO6za/DzNu+sPdz0d+v85EMBKi/akoXgsZdya8vF7w==}
     engines: {node: '>=22'}
 
-  '@scalar/fastify-api-reference@1.82.0':
-    resolution: {integrity: sha512-jTNk4XiqU8ZApNrNM+Elyn6TGqFR4wzXLvfKWVpKo1g8vUKTUMqYg2jdLpMnPgjnxhaPnWed4gNwZu8akT/BgQ==}
+  '@scalar/fastify-api-reference@1.82.1':
+    resolution: {integrity: sha512-HKw/Mru0aJP4NK1L64rzPut0/n+OFAEAJxrNxfkk4EopLgBbR5kiHUslXgMm3JzSLymoVHx6eZcoRZapDxeT9g==}
     engines: {node: '>=22'}
 
   '@scalar/helpers@0.16.4':
@@ -6401,7 +6401,7 @@ snapshots:
       '@scalar/types': 0.31.0
       '@scalar/validation': 0.6.9
 
-  '@scalar/fastify-api-reference@1.82.0':
+  '@scalar/fastify-api-reference@1.82.1':
     dependencies:
       '@scalar/client-side-rendering': 0.4.22
       '@scalar/json-magic': 0.21.1
