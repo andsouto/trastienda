@@ -7,7 +7,7 @@ Open-source inventory and sales management for small retail.
 - Sales tickets and purchase invoices.
 - REST API (OpenAPI) + Angular admin app. Bring your own OIDC identity provider.
 
-> ⚠️ Early stage: not usable yet. Where it stands and what comes next is in
+> ⚠️ Early stage: not usable yet. What is left to build, and in what order, is in
 > [docs/roadmap.md](docs/roadmap.md); why it is built the way it is, in
 > [docs/decisions/](docs/decisions/).
 

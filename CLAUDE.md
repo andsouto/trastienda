@@ -5,7 +5,7 @@ variants (size/color), stock tracked as a movement ledger, sales tickets and pur
 invoices. Backend API + admin web app. A future public online shop will be an external
 consumer of the same API (out of scope for now, separate private repo).
 
-Where the work stands, what comes next and the decisions still open are in
+What is left to build, in what order, and the decisions still open are in
 [docs/roadmap.md](docs/roadmap.md), the only document that tracks state. Why things are
 the way they are is in the ADRs in [docs/decisions/](docs/decisions/): read them before
 proposing changes to stack or architecture, and do not re-litigate settled decisions
@@ -95,7 +95,7 @@ without new evidence.
   `pnpm test`, `pnpm build` — all from root. `pnpm test` runs one app at a time: the
   admin's Chromium tests stall when a container starts beside them, as the api's
   Testcontainers do
-  ([angular/angular-cli#34390](https://github.com/angular/angular-cli/issues/34390)).
+  ([vitest#11636](https://github.com/vitest-dev/vitest/issues/11636)).
 - `pnpm codegen` — regenerate `openapi.json` + the admin's orval client (run after any
   route/schema change and commit the result).
 - `process-compose up` — the whole local stack in one TUI: `docker compose up -d --wait`
@@ -127,9 +127,10 @@ without new evidence.
 - **Each doc holds one kind of truth.** CLAUDE.md: how to work here today. ADRs: why —
   what was decided, built or not, in a sentence or two, and each alternative rejected
   with its reason in a line; how it is built is the code's to say. Living documents,
-  updated in place, git is the history. `docs/roadmap.md`: state — done, next, and the
-  open decisions with their evidence. `docs/design/`: a block's design ahead of its
-  code, deleted when the block lands once any lasting why has moved to an ADR. A change
+  updated in place, git is the history. `docs/roadmap.md`: state — what is left, in
+  order, and the open decisions with their evidence; a block leaves it when it lands.
+  `docs/design/`: a block's design ahead of its code, deleted when the block lands once
+  any lasting why has moved to an ADR. A change
   that makes any of them untrue fixes it in the same PR. Nothing that expires on its
   own: no status dates, a version only when it is the constraint, tool popularity only
   as evidence for an open decision, and a fact about a third-party tool next to the
